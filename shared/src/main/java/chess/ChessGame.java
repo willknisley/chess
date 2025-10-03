@@ -75,19 +75,26 @@ public class ChessGame {
             throw new InvalidMoveException("No piece at start position");
         }
 
+        if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+            //if (isInCheck(TeamColor.BLACK)) {
+                //throw new InvalidMoveException("Piece is in check");
+            //}
+            if (board.getPiece(endPosition) != null && board.getPiece(endPosition).getTeamColor() == TeamColor.BLACK) {
+                throw new InvalidMoveException();
+            }
+        } else if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            //if (isInCheck(TeamColor.WHITE)) {
+                //throw new InvalidMoveException("Piece is in check");
+            //}
+            if (board.getPiece(endPosition) != null && board.getPiece(endPosition).getTeamColor() == TeamColor.WHITE) {
+                throw new InvalidMoveException();
+            }
+        }
+
         if (move.getPromotionPiece() != null) {
             board.addPiece(endPosition, new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
         } else {
             board.addPiece(endPosition, piece);
-        }
-        if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
-            if (isInCheck(TeamColor.BLACK)) {
-                throw new InvalidMoveException("Piece is in check");
-            }
-        } else if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            if (isInCheck(TeamColor.WHITE)) {
-                throw new InvalidMoveException("Piece is in check");
-            }
         }
 
         if (teamTurn == TeamColor.WHITE) {
@@ -98,7 +105,6 @@ public class ChessGame {
 
 
 
-        //check about own piece
         //check about jumping enemy
         //check if too far
         //check if captured piece
