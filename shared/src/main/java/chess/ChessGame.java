@@ -53,6 +53,8 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+       // public Collection<ChessMove> validMoves (validMoves copy) {
+        //}
         throw new RuntimeException("Not implemented");
     }
 
@@ -63,6 +65,48 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece piece = board.getPiece(startPosition);
+
+        board.addPiece(startPosition, null);
+
+        if (piece == null) {
+            throw new InvalidMoveException("No piece at start position");
+        }
+
+        if (move.getPromotionPiece() != null) {
+            board.addPiece(endPosition, new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+        } else {
+            board.addPiece(endPosition, piece);
+        }
+        if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+            if (isInCheck(TeamColor.BLACK)) {
+                throw new InvalidMoveException("Piece is in check");
+            }
+        } else if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            if (isInCheck(TeamColor.WHITE)) {
+                throw new InvalidMoveException("Piece is in check");
+            }
+        }
+
+        if (teamTurn == TeamColor.WHITE) {
+            teamTurn = TeamColor.BLACK;
+        } else {
+            teamTurn = TeamColor.WHITE;
+        }
+
+
+
+        //check about own piece
+        //check about jumping enemy
+        //check if too far
+        //check if captured piece
+        //check if move out of turn
+        //check about diagonal capture
+        //check about move through piece
+        //check for invalid move
+        //check about double move pawn
 
     }
 
