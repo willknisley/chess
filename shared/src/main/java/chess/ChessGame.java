@@ -68,11 +68,15 @@ public class ChessGame {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         ChessPiece piece = board.getPiece(startPosition);
+        int startRow = startPosition.getRow();
+        int endRow = endPosition.getRow();
+        int startCol = startPosition.getColumn();
+        int endCol = endPosition.getColumn();
 
         board.addPiece(startPosition, null);
 
         if (piece == null) {
-            throw new InvalidMoveException("No piece at start position");
+            throw new InvalidMoveException();
         }
 
         if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
@@ -82,6 +86,7 @@ public class ChessGame {
             if (board.getPiece(endPosition) != null && board.getPiece(endPosition).getTeamColor() == TeamColor.BLACK) {
                 throw new InvalidMoveException();
             }
+
         } else if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
             //if (isInCheck(TeamColor.WHITE)) {
                 //throw new InvalidMoveException("Piece is in check");
@@ -91,28 +96,69 @@ public class ChessGame {
             }
         }
 
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            if (startRow != 2 && endRow - startRow == 2) {
+                throw new InvalidMoveException();
+            } else if (startRow != 7 && endRow - startRow == 7) {
+                throw new InvalidMoveException();
+            }
+        }
+        if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
+            if(endRow - startRow > 7) {
+                throw new InvalidMoveException();
+            }
+        } else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
+            if(endRow - startRow > 7) {
+                throw new InvalidMoveException();
+            }
+        } else if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
+            if(endRow - startRow > 7) {
+                throw new InvalidMoveException();
+            }
+        } else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+            if (endRow - startRow > 1) {
+                throw new InvalidMoveException();
+            }
+        } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+            if (endRow - startRow > 3) {
+                throw new InvalidMoveException();
+            }
+        } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            if (endRow - startRow > 2) {
+                throw new InvalidMoveException();
+            }
+        }
+
         if (move.getPromotionPiece() != null) {
             board.addPiece(endPosition, new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
         } else {
             board.addPiece(endPosition, piece);
         }
-
+        
         if (teamTurn == TeamColor.WHITE) {
+            TeamColor currentColor = TeamColor.WHITE;
+            if (piece.getTeamColor() != currentColor) {
+                throw new InvalidMoveException();
+            }
             teamTurn = TeamColor.BLACK;
-        } else {
+        } else if (teamTurn == TeamColor.BLACK){
+            TeamColor currentColor = TeamColor.BLACK;
+            if (piece.getTeamColor() != currentColor) {
+                throw new InvalidMoveException();
+            }
             teamTurn = TeamColor.WHITE;
         }
 
 
 
+
+
         //check about jumping enemy
-        //check if too far
         //check if captured piece
         //check if move out of turn
         //check about diagonal capture
         //check about move through piece
         //check for invalid move
-        //check about double move pawn
 
     }
 
