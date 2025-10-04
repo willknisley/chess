@@ -72,6 +72,7 @@ public class ChessGame {
         int endRow = endPosition.getRow();
         int startCol = startPosition.getColumn();
         int endCol = endPosition.getColumn();
+        ChessPiece pieceGoal = board.getPiece(endPosition);
 
         board.addPiece(startPosition, null);
 
@@ -80,17 +81,21 @@ public class ChessGame {
         }
 
         if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
-            //if (isInCheck(TeamColor.BLACK)) {
-                //throw new InvalidMoveException("Piece is in check");
-            //}
+            if (isInCheck(TeamColor.BLACK)) {
+                //board.addPiece(startPosition, piece);
+                //board.addPiece(endPosition, pieceGoal);
+                throw new InvalidMoveException("Piece is in check");
+            }
             if (board.getPiece(endPosition) != null && board.getPiece(endPosition).getTeamColor() == TeamColor.BLACK) {
                 throw new InvalidMoveException();
             }
 
         } else if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            //if (isInCheck(TeamColor.WHITE)) {
-                //throw new InvalidMoveException("Piece is in check");
-            //}
+            if (isInCheck(TeamColor.WHITE)) {
+                //board.addPiece(startPosition, piece);
+                //board.addPiece(endPosition, pieceGoal);
+                throw new InvalidMoveException("Piece is in check");
+            }
             if (board.getPiece(endPosition) != null && board.getPiece(endPosition).getTeamColor() == TeamColor.WHITE) {
                 throw new InvalidMoveException();
             }
@@ -107,13 +112,174 @@ public class ChessGame {
             if(endRow - startRow > 7) {
                 throw new InvalidMoveException();
             }
+
+            int rowWalk = startRow;
+            int colWalk = startCol;
+
+                if (endRow - startRow == 0) { //horizontal
+                    if (colWalk > endCol) {
+                        colWalk = startCol - 1;
+                        while (colWalk > endCol) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            colWalk--;
+                        }
+                    } else {
+                        colWalk = startCol + 1;
+                        while (colWalk < endCol) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            colWalk++;
+                        }
+                    }
+                } else if (endCol - startCol == 0) { //vertical
+                    if (rowWalk > endRow) {
+                        rowWalk = startRow - 1;
+                        while (rowWalk > endRow) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            rowWalk--;
+                        }
+                    } else {
+                        rowWalk = startRow + 1;
+                        while (rowWalk < endRow) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            rowWalk++;
+                        }
+                    }
+                } else if ((endRow - startRow) * (endRow - startRow) == (endCol - startCol) * (endCol - startCol)) { //diagonal
+                    if (endRow > startRow && endCol > startCol) {
+                        rowWalk++; colWalk++;
+                        while (rowWalk < endRow ) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            rowWalk++; colWalk++;
+                        }
+                    } else if (endRow > startRow && endCol < startCol) {
+                        rowWalk++; colWalk--;
+                        while (rowWalk < endRow ) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            rowWalk++; colWalk--;
+                        }
+                    } else if (endRow < startRow && endCol > startCol) {
+                        rowWalk--; colWalk++;
+                        while (rowWalk > endRow ) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            rowWalk--; colWalk++;
+                        }
+                    } else if (endRow < startRow && endCol < startCol) {
+                        rowWalk--; colWalk--;
+                        while (rowWalk > endRow ) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            rowWalk--; colWalk--;
+                        }
+                    }
+                }
+
         } else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
             if(endRow - startRow > 7) {
                 throw new InvalidMoveException();
             }
+
+            int rowWalk = startRow;
+            int colWalk = startCol;
+
+            if (endRow - startRow == 0) { //horizontal
+                if (colWalk > endCol) {
+                    colWalk = startCol - 1;
+                    while (colWalk > endCol) {
+                        if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                            throw new InvalidMoveException();
+                        }
+                        colWalk--;
+                    }
+                } else {
+                    colWalk = startCol + 1;
+                    while (colWalk < endCol) {
+                        if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                            throw new InvalidMoveException();
+                        }
+                        colWalk++;
+                    }
+                }
+            } else if (endCol - startCol == 0) { //vertical
+                if (rowWalk > endRow) {
+                    rowWalk = startRow - 1;
+                    while (rowWalk > endRow) {
+                        if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                            throw new InvalidMoveException();
+                        }
+                        rowWalk--;
+                    }
+                } else {
+                    rowWalk = startRow + 1;
+                    while (rowWalk < endRow) {
+                        if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                            throw new InvalidMoveException();
+                        }
+                        rowWalk++;
+                    }
+                }
         } else if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
-            if(endRow - startRow > 7) {
-                throw new InvalidMoveException();
+                if (endRow - startRow > 7) {
+                    throw new InvalidMoveException();
+                }
+
+                if ((endRow - startRow) * (endRow - startRow) == (endCol - startCol) * (endCol - startCol)) { //diagonal
+                    if (endRow > startRow && endCol > startCol) {
+                        rowWalk++;
+                        colWalk++;
+                        while (rowWalk < endRow) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            rowWalk++;
+                            colWalk++;
+                        }
+                    } else if (endRow > startRow && endCol < startCol) {
+                        rowWalk++;
+                        colWalk--;
+                        while (rowWalk < endRow) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            rowWalk++;
+                            colWalk--;
+                        }
+                    } else if (endRow < startRow && endCol > startCol) {
+                        rowWalk--;
+                        colWalk++;
+                        while (rowWalk > endRow) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            rowWalk--;
+                            colWalk++;
+                        }
+                    } else if (endRow < startRow && endCol < startCol) {
+                        rowWalk--;
+                        colWalk--;
+                        while (rowWalk > endRow) {
+                            if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                throw new InvalidMoveException();
+                            }
+                            rowWalk--;
+                            colWalk--;
+                        }
+                    }
+                }
             }
         } else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
             if (endRow - startRow > 1) {
@@ -126,6 +292,36 @@ public class ChessGame {
         } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
             if (endRow - startRow > 2) {
                 throw new InvalidMoveException();
+            }
+
+            if (piece.getTeamColor() == TeamColor.WHITE) {
+                if (startRow + 1 == endRow && startCol + 1 == endCol) {
+                    if (pieceGoal == null ) {
+                        throw new InvalidMoveException();
+                    } else if (pieceGoal.getTeamColor() == piece.getTeamColor()) {
+                        throw new InvalidMoveException();
+                    }
+                } else if (startRow + 1 == endRow && startCol - 1 == endCol) {
+                    if (pieceGoal == null) {
+                        throw new InvalidMoveException();
+                    } else if (pieceGoal.getTeamColor() == piece.getTeamColor()) {
+                        throw new InvalidMoveException();
+                    }
+                }
+            } else if (piece.getTeamColor() == TeamColor.BLACK) {
+                if (startRow - 1 == endRow && startCol + 1 == endCol) {
+                    if (pieceGoal == null ) {
+                        throw new InvalidMoveException();
+                    } else if (pieceGoal.getTeamColor() == piece.getTeamColor()) {
+                        throw new InvalidMoveException();
+                    }
+                } else if (startRow - 1 == endRow && startCol - 1 == endCol) {
+                    if (pieceGoal == null) {
+                        throw new InvalidMoveException();
+                    } else if (pieceGoal.getTeamColor() == piece.getTeamColor()) {
+                        throw new InvalidMoveException();
+                    }
+                }
             }
         }
 
@@ -169,7 +365,277 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPosition = null;
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPiece piece = board.getPiece(new ChessPosition(i, j));
+                if (piece != null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor) {
+                    kingPosition = new ChessPosition(i, j);
+                    break;
+                }
+            }
+        }
+        if (kingPosition == null) {
+            return false;
+        }
+
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPiece piece = board.getPiece(new ChessPosition(i, j));
+                if (piece != null && piece.getTeamColor() != teamColor) {
+                    ChessPosition position = new ChessPosition(i, j);
+                    int rowWalk = position.getRow();
+                    int colWalk = position.getColumn();
+                    int startRow = position.getRow();
+                    int endRow = kingPosition.getRow();
+                    int startCol = position.getColumn();
+                    int endCol = kingPosition.getColumn();
+
+                    if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
+                        if ((endRow - startRow) * (endRow - startRow) == (endCol - startCol) * (endCol - startCol)) {
+                            if (endRow > startRow && endCol > startCol) {
+                                rowWalk++;
+                                colWalk++;
+                                while (rowWalk < endRow) {
+                                    if (rowWalk == endRow && colWalk == endCol) {
+                                        return true;
+                                    }
+                                    if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                        break;
+                                    }
+                                    rowWalk++;
+                                    colWalk++;
+                                }
+                            } else if (endRow > startRow && endCol < startCol) {
+                                rowWalk++;
+                                colWalk--;
+                                while (rowWalk < endRow) {
+                                    if (rowWalk == endRow && colWalk == endCol) {
+                                        return true;
+                                    }
+
+                                    if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                        break;
+                                    }
+                                    rowWalk++;
+                                    colWalk--;
+                                }
+                            } else if (endRow < startRow && endCol > startCol) {
+                                rowWalk--;
+                                colWalk++;
+                                while (rowWalk > endRow) {
+                                    if (rowWalk == endRow && colWalk == endCol) {
+                                        return true;
+                                    }
+                                    if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                        break;
+                                    }
+                                    rowWalk--;
+                                    colWalk++;
+                                }
+                            } else if (endRow < startRow && endCol < startCol) {
+                                rowWalk--;
+                                colWalk--;
+                                while (rowWalk > endRow) {
+                                    if (rowWalk == endRow && colWalk == endCol) {
+                                        return true;
+                                    }
+                                    if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                        break;
+                                    }
+                                    rowWalk--;
+                                    colWalk--;
+                                }
+                            } else if (endRow - startRow == 0) {
+                            if (colWalk > endCol) {
+                                colWalk = startCol - 1;
+                                while (colWalk > endCol) {
+                                    if (rowWalk == endRow && colWalk == endCol) {
+                                        return true;
+                                    }
+                                    if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                        break;
+                                    }
+                                    colWalk--;
+                                }
+                            } else {
+                                colWalk = startCol + 1;
+                                while (colWalk < endCol) {
+                                    if (rowWalk == endRow && colWalk == endCol) {
+                                        return true;
+                                    }
+                                    if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                        break;
+                                    }
+                                    colWalk++;
+                                }
+                            }
+                        }
+                        } else if (endCol - startCol == 0) {
+                        if (rowWalk > endRow) {
+                            rowWalk = startRow - 1;
+                            while (rowWalk > endRow) {
+                                if (rowWalk == endRow && colWalk == endCol) {
+                                    return true;
+                                }
+                                if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                    break;
+                                }
+                                rowWalk--;
+                            }
+                        } else {
+                            rowWalk = startRow + 1;
+                            while (rowWalk < endRow) {
+                                if (rowWalk == endRow && colWalk == endCol) {
+                                    return true;
+                                }
+                                if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                    break;
+                                }
+                                rowWalk++;
+                            }
+                        }
+                    }
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
+                        if ((endRow - startRow) * (endRow - startRow) == (endCol - startCol) * (endCol - startCol)) {
+                            if (endRow > startRow && endCol > startCol) {
+                                rowWalk++;
+                                colWalk++;
+                                while (rowWalk < endRow) {
+                                    if (rowWalk == endRow && colWalk == endCol) {
+                                        return true;
+                                    }
+                                    if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                        break;
+                                    }
+                                    rowWalk++;
+                                    colWalk++;
+                                }
+                            } else if (endRow > startRow && endCol < startCol) {
+                                rowWalk++;
+                                colWalk--;
+                                while (rowWalk < endRow) {
+                                    if (rowWalk == endRow && colWalk == endCol) {
+                                        return true;
+                                    }
+
+                                    if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                        break;
+                                    }
+                                    rowWalk++;
+                                    colWalk--;
+                                }
+                            } else if (endRow < startRow && endCol > startCol) {
+                                rowWalk--;
+                                colWalk++;
+                                while (rowWalk > endRow) {
+                                    if (rowWalk == endRow && colWalk == endCol) {
+                                        return true;
+                                    }
+                                    if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                        break;
+                                    }
+                                    rowWalk--;
+                                    colWalk++;
+                                }
+                            } else if (endRow < startRow && endCol < startCol) {
+                                rowWalk--;
+                                colWalk--;
+                                while (rowWalk > endRow) {
+                                    if (rowWalk == endRow && colWalk == endCol) {
+                                        return true;
+                                    }
+                                    if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                        break;
+                                    }
+                                    rowWalk--;
+                                    colWalk--;
+                                }
+                            }
+                        }
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
+                        if (endRow - startRow == 0) {
+                            if (colWalk > endCol) {
+                                colWalk = startCol - 1;
+                                while (colWalk > endCol) {
+                                    if (rowWalk == endRow && colWalk == endCol) {
+                                        return true;
+                                    }
+                                if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                    break;
+                                }
+                                colWalk--;
+                            }
+                        } else {
+                            colWalk = startCol + 1;
+                            while (colWalk < endCol) {
+                                if (rowWalk == endRow && colWalk == endCol) {
+                                    return true;
+                                }
+                                if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                    break;
+                                }
+                                colWalk++;
+                            }
+                        }
+                    } else if (endRow - startRow == 0) {
+                        if (rowWalk > endRow) {
+                            rowWalk = startRow - 1;
+                            while (rowWalk > endRow) {
+                                if (rowWalk == endRow && colWalk == endCol) {
+                                    return true;
+                                }
+                                if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                    break;
+                                }
+                                rowWalk--;
+                            }
+                        } else {
+                            rowWalk = startRow + 1;
+                            while (rowWalk < endRow) {
+                                if (rowWalk == endRow && colWalk == endCol) {
+                                    return true;
+                                }
+                                if (board.getPiece(new ChessPosition(rowWalk, colWalk)) != null) {
+                                    break;
+                                }
+                                rowWalk++;
+                            }
+                        }
+                    }
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                        if (endRow == startRow + 2 && endCol == startCol + 1) {
+                            return true;
+                        } else if (endRow == startRow + 2 && endCol == startCol - 1) {
+                            return true;
+                        } else if (endRow == startRow - 2 && endCol == startCol + 1) {
+                            return true;
+                        } else if (endRow == startRow - 2 && endCol == startCol - 1) {
+                            return true;
+                        } else if (endRow == startRow + 1 && endCol == startCol + 2) {
+                            return true;
+                        } else if (endRow == startRow + 1 && endCol == startCol - 2) {
+                            return true;
+                        } else if (endRow == startRow - 1 && endCol == startCol + 2) {
+                            return true;
+                        } else if (endRow == startRow - 1 && endCol == startCol - 2) {
+                            return true;
+                        }
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                            if (piece.getTeamColor() == TeamColor.WHITE) {
+                                    if (startRow + 1 == endRow && (startCol - 1 == endCol || startCol + 1 == endCol)) {
+                                        return true;
+                                    }
+                            } else if (piece.getTeamColor() == TeamColor.BLACK) {
+                                    if (startRow - 1 == endRow && (startCol - 1 == endCol || startCol + 1 == endCol)) {
+                                        return true;
+                                    }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
