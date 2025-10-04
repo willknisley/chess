@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Arrays;
@@ -53,9 +54,35 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-       // public Collection<ChessMove> validMoves (validMoves copy) {
-        //}
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        ChessPiece piece = board.getPiece(startPosition);
+
+        Collection<ChessMove> copyMoves = piece.pieceMoves(board, startPosition);
+
+        for (ChessMove move : copyMoves) {
+            ChessBoard Copy = new ChessBoard(board);
+
+            Copy.addPiece(move.getStartPosition(), null);
+            if (move.getPromotionPiece() != null) {
+                Copy.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+            } else {
+                Copy.addPiece(move.getEndPosition(), piece);
+            }
+
+            ChessBoard ogBoard = this.board;
+            this.board = Copy;
+
+            if (!isInCheck(piece.getTeamColor())) {
+                validMoves.add(move);
+            }
+
+            this.board = ogBoard;
+        }
+
+
+
+
+        return validMoves;
     }
 
     /**
@@ -632,6 +659,12 @@ public class ChessGame {
                                         return true;
                                     }
                         }
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                        if ((endRow - startRow) * (endRow - startRow) <= 1 && (endCol - startCol) * (endCol - startCol) <= 1) {
+                            if (endRow != startRow || endCol != startCol) {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
@@ -649,7 +682,7 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             return false;
         }
-        return true;
+    return true;
     }
 
     /**
