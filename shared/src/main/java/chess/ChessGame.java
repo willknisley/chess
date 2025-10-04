@@ -374,6 +374,7 @@ public class ChessGame {
                     break;
                 }
             }
+            if (kingPosition!= null) break;
         }
         if (kingPosition == null) {
             return false;
@@ -396,7 +397,7 @@ public class ChessGame {
                             if (endRow > startRow && endCol > startCol) {
                                 rowWalk++;
                                 colWalk++;
-                                while (rowWalk < endRow) {
+                                while (rowWalk <= endRow) {
                                     if (rowWalk == endRow && colWalk == endCol) {
                                         return true;
                                     }
@@ -409,7 +410,7 @@ public class ChessGame {
                             } else if (endRow > startRow && endCol < startCol) {
                                 rowWalk++;
                                 colWalk--;
-                                while (rowWalk < endRow) {
+                                while (rowWalk <= endRow) {
                                     if (rowWalk == endRow && colWalk == endCol) {
                                         return true;
                                     }
@@ -423,7 +424,7 @@ public class ChessGame {
                             } else if (endRow < startRow && endCol > startCol) {
                                 rowWalk--;
                                 colWalk++;
-                                while (rowWalk > endRow) {
+                                while (rowWalk >= endRow) {
                                     if (rowWalk == endRow && colWalk == endCol) {
                                         return true;
                                     }
@@ -436,7 +437,7 @@ public class ChessGame {
                             } else if (endRow < startRow && endCol < startCol) {
                                 rowWalk--;
                                 colWalk--;
-                                while (rowWalk > endRow) {
+                                while (rowWalk >= endRow) {
                                     if (rowWalk == endRow && colWalk == endCol) {
                                         return true;
                                     }
@@ -449,7 +450,7 @@ public class ChessGame {
                             } else if (endRow - startRow == 0) {
                             if (colWalk > endCol) {
                                 colWalk = startCol - 1;
-                                while (colWalk > endCol) {
+                                while (colWalk >= endCol) {
                                     if (rowWalk == endRow && colWalk == endCol) {
                                         return true;
                                     }
@@ -460,7 +461,7 @@ public class ChessGame {
                                 }
                             } else {
                                 colWalk = startCol + 1;
-                                while (colWalk < endCol) {
+                                while (colWalk <= endCol) {
                                     if (rowWalk == endRow && colWalk == endCol) {
                                         return true;
                                     }
@@ -474,7 +475,7 @@ public class ChessGame {
                         } else if (endCol - startCol == 0) {
                         if (rowWalk > endRow) {
                             rowWalk = startRow - 1;
-                            while (rowWalk > endRow) {
+                            while (rowWalk >= endRow) {
                                 if (rowWalk == endRow && colWalk == endCol) {
                                     return true;
                                 }
@@ -485,7 +486,7 @@ public class ChessGame {
                             }
                         } else {
                             rowWalk = startRow + 1;
-                            while (rowWalk < endRow) {
+                            while (rowWalk <= endRow) {
                                 if (rowWalk == endRow && colWalk == endCol) {
                                     return true;
                                 }
@@ -501,7 +502,7 @@ public class ChessGame {
                             if (endRow > startRow && endCol > startCol) {
                                 rowWalk++;
                                 colWalk++;
-                                while (rowWalk < endRow) {
+                                while (rowWalk <= endRow) {
                                     if (rowWalk == endRow && colWalk == endCol) {
                                         return true;
                                     }
@@ -514,7 +515,7 @@ public class ChessGame {
                             } else if (endRow > startRow && endCol < startCol) {
                                 rowWalk++;
                                 colWalk--;
-                                while (rowWalk < endRow) {
+                                while (rowWalk <= endRow) {
                                     if (rowWalk == endRow && colWalk == endCol) {
                                         return true;
                                     }
@@ -528,7 +529,7 @@ public class ChessGame {
                             } else if (endRow < startRow && endCol > startCol) {
                                 rowWalk--;
                                 colWalk++;
-                                while (rowWalk > endRow) {
+                                while (rowWalk >= endRow) {
                                     if (rowWalk == endRow && colWalk == endCol) {
                                         return true;
                                     }
@@ -541,7 +542,7 @@ public class ChessGame {
                             } else if (endRow < startRow && endCol < startCol) {
                                 rowWalk--;
                                 colWalk--;
-                                while (rowWalk > endRow) {
+                                while (rowWalk >= endRow) {
                                     if (rowWalk == endRow && colWalk == endCol) {
                                         return true;
                                     }
@@ -557,7 +558,7 @@ public class ChessGame {
                         if (endRow - startRow == 0) {
                             if (colWalk > endCol) {
                                 colWalk = startCol - 1;
-                                while (colWalk > endCol) {
+                                while (colWalk >= endCol) {
                                     if (rowWalk == endRow && colWalk == endCol) {
                                         return true;
                                     }
@@ -568,7 +569,7 @@ public class ChessGame {
                             }
                         } else {
                             colWalk = startCol + 1;
-                            while (colWalk < endCol) {
+                            while (colWalk <= endCol) {
                                 if (rowWalk == endRow && colWalk == endCol) {
                                     return true;
                                 }
@@ -578,10 +579,10 @@ public class ChessGame {
                                 colWalk++;
                             }
                         }
-                    } else if (endRow - startRow == 0) {
+                    } else if (endCol - startCol == 0) {
                         if (rowWalk > endRow) {
                             rowWalk = startRow - 1;
-                            while (rowWalk > endRow) {
+                            while (rowWalk >= endRow) {
                                 if (rowWalk == endRow && colWalk == endCol) {
                                     return true;
                                 }
@@ -592,7 +593,7 @@ public class ChessGame {
                             }
                         } else {
                             rowWalk = startRow + 1;
-                            while (rowWalk < endRow) {
+                            while (rowWalk <= endRow) {
                                 if (rowWalk == endRow && colWalk == endCol) {
                                     return true;
                                 }
@@ -645,7 +646,10 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+        return true;
     }
 
     /**
