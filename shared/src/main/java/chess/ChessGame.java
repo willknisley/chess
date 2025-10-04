@@ -57,23 +57,27 @@ public class ChessGame {
         Collection<ChessMove> validMoves = new ArrayList<>();
         ChessPiece piece = board.getPiece(startPosition);
 
+        if (piece == null) {
+            return validMoves;
+        }
+
         Collection<ChessMove> copyMoves = piece.pieceMoves(board, startPosition);
 
-        for (ChessMove move : copyMoves) {
-            ChessBoard Copy = new ChessBoard(board);
+        for (ChessMove newMove : copyMoves) {
+            ChessBoard newCopy = new ChessBoard(board);
 
-            Copy.addPiece(move.getStartPosition(), null);
-            if (move.getPromotionPiece() != null) {
-                Copy.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+            newCopy.addPiece(newMove.getStartPosition(), null);
+            if (newMove.getPromotionPiece() != null) {
+                newCopy.addPiece(newMove.getEndPosition(), new ChessPiece(piece.getTeamColor(), newMove.getPromotionPiece()));
             } else {
-                Copy.addPiece(move.getEndPosition(), piece);
+                newCopy.addPiece(newMove.getEndPosition(), new ChessPiece(piece.getTeamColor(), piece.getPieceType()));
             }
 
             ChessBoard ogBoard = this.board;
-            this.board = Copy;
+            this.board = newCopy;
 
-            if (!isInCheck(piece.getTeamColor())) {
-                validMoves.add(move);
+            if (isInCheck(piece.getTeamColor()) == false) {
+                validMoves.add(newMove);
             }
 
             this.board = ogBoard;
@@ -434,7 +438,8 @@ public class ChessGame {
                                     rowWalk++;
                                     colWalk++;
                                 }
-                            } else if (endRow > startRow && endCol < startCol) {
+                            }
+                            if (endRow > startRow && endCol < startCol) {
                                 rowWalk++;
                                 colWalk--;
                                 while (rowWalk <= endRow) {
@@ -448,7 +453,8 @@ public class ChessGame {
                                     rowWalk++;
                                     colWalk--;
                                 }
-                            } else if (endRow < startRow && endCol > startCol) {
+                            }
+                            if (endRow < startRow && endCol > startCol) {
                                 rowWalk--;
                                 colWalk++;
                                 while (rowWalk >= endRow) {
@@ -461,7 +467,8 @@ public class ChessGame {
                                     rowWalk--;
                                     colWalk++;
                                 }
-                            } else if (endRow < startRow && endCol < startCol) {
+                            }
+                            if (endRow < startRow && endCol < startCol) {
                                 rowWalk--;
                                 colWalk--;
                                 while (rowWalk >= endRow) {
@@ -474,7 +481,9 @@ public class ChessGame {
                                     rowWalk--;
                                     colWalk--;
                                 }
-                            } else if (endRow - startRow == 0) {
+                            }
+                        }
+                        if (endRow - startRow == 0) {
                             if (colWalk > endCol) {
                                 colWalk = startCol - 1;
                                 while (colWalk >= endCol) {
@@ -499,7 +508,7 @@ public class ChessGame {
                                 }
                             }
                         }
-                        } else if (endCol - startCol == 0) {
+                        if (endCol - startCol == 0) {
                         if (rowWalk > endRow) {
                             rowWalk = startRow - 1;
                             while (rowWalk >= endRow) {
@@ -679,10 +688,22 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (!isInCheck(teamColor)) {
+        if (isInCheck(teamColor) == false) {
             return false;
         }
-    return true;
+
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPiece piece = board.getPiece(new ChessPosition(i, j));
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    if (validMoves(new ChessPosition(i, j)).size() > 0 ) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -693,7 +714,23 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) {
+            return false;
+        }
+
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPiece piece = board.getPiece(new ChessPosition(i, j));
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    if (validMoves(new ChessPosition(i, j)).size() > 0 ) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+
+        return true;
     }
 
     /**
