@@ -113,8 +113,6 @@ public class ChessGame {
 
         if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
             if (isInCheck(TeamColor.BLACK)) {
-                //board.addPiece(startPosition, piece);
-                //board.addPiece(endPosition, pieceGoal);
                 throw new InvalidMoveException("Piece is in check");
             }
             if (board.getPiece(endPosition) != null && board.getPiece(endPosition).getTeamColor() == TeamColor.BLACK) {
@@ -123,8 +121,6 @@ public class ChessGame {
 
         } else if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
             if (isInCheck(TeamColor.WHITE)) {
-                //board.addPiece(startPosition, piece);
-                //board.addPiece(endPosition, pieceGoal);
                 throw new InvalidMoveException("Piece is in check");
             }
             if (board.getPiece(endPosition) != null && board.getPiece(endPosition).getTeamColor() == TeamColor.WHITE) {
@@ -147,7 +143,7 @@ public class ChessGame {
             int rowWalk = startRow;
             int colWalk = startCol;
 
-                if (endRow - startRow == 0) { //horizontal
+                if (endRow - startRow == 0) {
                     if (colWalk > endCol) {
                         colWalk = startCol - 1;
                         while (colWalk > endCol) {
@@ -165,7 +161,7 @@ public class ChessGame {
                             colWalk++;
                         }
                     }
-                } else if (endCol - startCol == 0) { //vertical
+                } else if (endCol - startCol == 0) {
                     if (rowWalk > endRow) {
                         rowWalk = startRow - 1;
                         while (rowWalk > endRow) {
@@ -227,7 +223,7 @@ public class ChessGame {
             int rowWalk = startRow;
             int colWalk = startCol;
 
-            if (endRow - startRow == 0) { //horizontal
+            if (endRow - startRow == 0) {
                 if (colWalk > endCol) {
                     colWalk = startCol - 1;
                     while (colWalk > endCol) {
@@ -245,7 +241,7 @@ public class ChessGame {
                         colWalk++;
                     }
                 }
-            } else if (endCol - startCol == 0) { //vertical
+            } else if (endCol - startCol == 0) {
                 if (rowWalk > endRow) {
                     rowWalk = startRow - 1;
                     while (rowWalk > endRow) {
@@ -268,7 +264,7 @@ public class ChessGame {
                     throw new InvalidMoveException();
                 }
 
-                if ((endRow - startRow) * (endRow - startRow) == (endCol - startCol) * (endCol - startCol)) { //diagonal
+                if ((endRow - startRow) * (endRow - startRow) == (endCol - startCol) * (endCol - startCol)) {
                     if (endRow > startRow && endCol > startCol) {
                         rowWalk++;
                         colWalk++;
@@ -375,18 +371,6 @@ public class ChessGame {
             }
             teamTurn = TeamColor.WHITE;
         }
-
-
-
-
-
-        //check about jumping enemy
-        //check if captured piece
-        //check if move out of turn
-        //check about diagonal capture
-        //check about move through piece
-        //check for invalid move
-
     }
 
     /**
