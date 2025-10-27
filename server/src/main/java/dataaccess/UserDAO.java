@@ -11,6 +11,12 @@ public class UserDAO {
         users.clear();
     }
     public void createUser(UserData user) throws DataAccessException {
+        if (users.containsKey(user.username())) {
+            throw new DataAccessException("Error: (username already exists)");
+        } else {
+            users.put(user.username(), user);
+        }
+
     }
     //public UserData getUser(String username) throws DataAccessException {
     //}
