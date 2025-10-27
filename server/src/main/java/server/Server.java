@@ -74,6 +74,38 @@ public class Server {
             }
         });
 
+        javalin.post("/session", ctx -> {
+            try {
+                var serializer = new Gson();
+                var json = ctx.body();
+                var hashMap = serializer.fromJson(json, HashMap.class);
+
+                String username = (String) hashMap.get("username");
+                String password = (String) hashMap.get("password");
+                if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+                    ctx.result("{\"message\": \"Error: bad request\"}");
+                    ctx.status(400);
+                    return;
+                }
+
+                AuthData result = userService.login(username, password);
+                var responseJson = serializer.toJson(result);
+                ctx.result(responseJson);
+                ctx.status(200);
+            } catch (DataAccessException e) {
+                if (e.getMessage().contains("username does not exist") || e.getMessage().contains("Wrong password") || e.getMessage().contains("unauthorized")) {
+                    ctx.status(401);
+                    ctx.result("{\"message\": \"Error: unauthorized\"}");
+                } else {
+                    ctx.status(500);
+                    ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
+                }
+            } catch (Exception e) {
+                ctx.status(500);
+                ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
+            }
+        });
+
 
 
     }

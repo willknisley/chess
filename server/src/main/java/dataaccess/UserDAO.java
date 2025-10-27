@@ -18,8 +18,13 @@ public class UserDAO {
         }
 
     }
-    //public UserData getUser(String username) throws DataAccessException {
-    //}
+    public UserData getUser(String username) throws DataAccessException {
+        if (users.containsKey(username)) {
+            return users.get(username);
+        } else {
+            throw new DataAccessException("Error: (username does not exist)");
+        }
+    }
     //public GameData createGame(String gameName, ChessGame game) throws DataAccessException {
     //}
 }
