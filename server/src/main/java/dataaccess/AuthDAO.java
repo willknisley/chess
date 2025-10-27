@@ -1,7 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
-import model.UserData;
+
 import java.util.HashMap;
 
 public class AuthDAO {
@@ -24,6 +24,14 @@ public class AuthDAO {
             throw new DataAccessException("authToken does not exist");
         } else {
             auths.remove(token);
+        }
+    }
+
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        if (!auths.containsKey(authToken)) {
+            throw new DataAccessException("authToken does not exist");
+        } else {
+            return auths.get(authToken);
         }
     }
 }

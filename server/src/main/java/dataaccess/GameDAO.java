@@ -2,6 +2,7 @@ package dataaccess;
 
 import model.GameData;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public class GameDAO {
@@ -10,6 +11,10 @@ public class GameDAO {
     public void clear() {
         games.clear();
         gameID_count = 1;
+    }
+
+    public Collection<GameData> listGames() {
+        return games.values();
     }
 
 }

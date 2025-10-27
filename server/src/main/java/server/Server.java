@@ -7,10 +7,14 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import io.javalin.*;
 import model.AuthData;
+import model.GameData;
 import service.ClearService;
+import service.GameService;
 import service.UserService;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Server {
 
@@ -19,6 +23,7 @@ public class Server {
     private final GameDAO gameDAO;
     private final AuthDAO authDAO;
     private final UserService userService;
+    private final GameService gameService;
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
@@ -26,6 +31,7 @@ public class Server {
         gameDAO = new GameDAO();
         authDAO = new AuthDAO();
         userService = new UserService(userDAO, authDAO);
+        gameService = new GameService(userDAO, gameDAO, authDAO);
 
 
         // Register your endpoints and exception handlers here.
@@ -125,6 +131,31 @@ public class Server {
                 ctx.status(500);
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
             }
+        });
+
+        javalin.get("/game", ctx -> {
+            try {
+                var serializer = new Gson();
+                String authToken = ctx.header("authorization");
+                if (authToken == null || authToken.isEmpty()) {
+                    ctx.status(401);
+                    ctx.result("{\"message\": \"Error: unauthorized\"}");
+                    return;
+                }
+                Collection<GameData> games = gameService.return_games(authToken);
+                //var responseJson = serializer.toJson(games);
+                Map<String, Object> wrapper = Map.of("games", games);
+                ctx.status(200);
+                ctx.result(serializer.toJson(wrapper));
+                //ctx.result(responseJson);
+            } catch (DataAccessException e) {
+                ctx.status(401);
+                ctx.result("{\"message\": \"Error: unauthorized\"}");
+            } catch (Exception e) {
+                ctx.status(500);
+                ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
+             }
+
         });
 
 
