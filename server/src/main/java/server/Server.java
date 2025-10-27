@@ -106,6 +106,28 @@ public class Server {
             }
         });
 
+        javalin.delete("/session", ctx -> {
+            try {
+                String authToken = ctx.header("authorization");
+                if (authToken == null || authToken.isEmpty()) {
+                    ctx.status(401);
+                    ctx.result("{\"message\": \"Error: unauthorized\"}");
+                    return;
+                }
+                userService.logout(authToken);
+                ctx.status(200);
+                ctx.result("{}");
+
+            } catch (DataAccessException e) {
+                ctx.status(401);
+                ctx.result("{\"message\": \"Error: unauthorized\"}");
+            } catch (Exception e) {
+                ctx.status(500);
+                ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
+            }
+        });
+
+
 
 
     }

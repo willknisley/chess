@@ -18,4 +18,12 @@ public class AuthDAO {
         }
 
     }
+
+    public void deleteAuth(String token) throws DataAccessException {
+        if (!auths.containsKey(token)) {
+            throw new DataAccessException("authToken does not exist");
+        } else {
+            auths.remove(token);
+        }
+    }
 }
