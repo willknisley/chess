@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTest {
-    //joingame positive and negative
     private UserDAO userDAO;
     private GameDAO gameDAO;
     private AuthDAO authDAO;
