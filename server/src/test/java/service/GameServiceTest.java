@@ -76,7 +76,7 @@ public class GameServiceTest {
             int ID = gameService.createGame(token, "game name");
             gameService.joinGame(token, ID, "BLACK");
             var game = gameDAO.listGames().iterator().next();
-            assertEquals("test user", game.whiteUsername());
+            assertEquals("test user", game.blackUsername());
         }
 
         @Test
@@ -85,7 +85,7 @@ public class GameServiceTest {
             var register = userService.register("test user", "password", "test@email.com");
             String token = register.authToken();
             GameService gameService = new GameService(userDAO, gameDAO, authDAO);
-            int ID = gameService.createGame("bad token", "game name");
+            int ID = gameService.createGame(token, "game name");
             assertThrows(DataAccessException.class, () -> gameService.joinGame("bad token", ID, "BLACK"));
         }
 

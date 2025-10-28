@@ -13,9 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServicetest
 {
-//register positive + negative
-    // login positive + negative
-    // logout positive + negative
     private UserDAO userDAO;
     private GameDAO gameDAO;
     private AuthDAO authDAO;
