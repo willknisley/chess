@@ -22,6 +22,10 @@ public class UserServicetest
         userDAO = new UserDAO();
         gameDAO = new GameDAO();
         authDAO = new AuthDAO();
+
+        userDAO.clear();
+        gameDAO.clear();
+        authDAO.clear();
     }
 
     @Test
@@ -66,7 +70,7 @@ public class UserServicetest
 
     @Test
     public void logoutNegativeTest() throws DataAccessException {
-        UserService userService = new UserService(userDAO, authDAO);userService.login("bad name", "password");
+        UserService userService = new UserService(userDAO, authDAO);
         assertThrows(DataAccessException.class, () ->
                 userService.logout("bad token")
         );

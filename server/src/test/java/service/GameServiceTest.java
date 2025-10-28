@@ -20,6 +20,10 @@ public class GameServiceTest {
             userDAO = new UserDAO();
             gameDAO = new GameDAO();
             authDAO = new AuthDAO();
+
+            userDAO.clear();
+            gameDAO.clear();
+            authDAO.clear();
         }
 
         @Test
