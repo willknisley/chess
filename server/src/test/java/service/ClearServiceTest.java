@@ -32,14 +32,14 @@ public class ClearServiceTest {
     public void clearPositiveTest() throws DataAccessException {
         UserService userService = new UserService(userDAO, authDAO);
         userService.register("test user", "password", "test@email.com");
-        clearService.clear_all();
+        clearService.clearAll();
         var user = userDAO.getUser("test user");
         assertNull(user);
     }
     @Test
     public void clearNegativeTest() throws DataAccessException {
-        clearService.clear_all();
-        assertDoesNotThrow(() -> clearService.clear_all());
+        clearService.clearAll();
+        assertDoesNotThrow(() -> clearService.clearAll());
         assertEquals(0, gameDAO.listGames().size());
         assertNull(userDAO.getUser("doesn't exist"));
     }

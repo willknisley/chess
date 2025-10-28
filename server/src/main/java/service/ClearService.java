@@ -14,7 +14,7 @@ public class ClearService {
         this.authDAO = authDAO;
     }
 
-    public void clear_all() {
+    public void clearAll() {
         userDAO.clear();
         gameDAO.clear();
         authDAO.clear();

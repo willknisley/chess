@@ -38,7 +38,7 @@ public class Server {
 
         javalin.delete("/db", ctx -> {
             try {
-                new ClearService(userDAO, gameDAO, authDAO).clear_all();
+                new ClearService(userDAO, gameDAO, authDAO).clearAll();
                 ctx.result("{}");
                 ctx.status(200);
             } catch (Exception e) {

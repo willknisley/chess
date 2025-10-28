@@ -7,11 +7,11 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class GameDAO {
-    int gameID_count;
+    int gameIdCount;
     HashMap<Integer, GameData> games = new HashMap<>();
     public void clear() {
         games.clear();
-        gameID_count = 1;
+        gameIdCount = 1;
     }
 
     public Collection<GameData> listGames() {
@@ -19,10 +19,10 @@ public class GameDAO {
     }
 
     public int createGame(String gameName) {
-        int gameID = gameID_count;
+        int gameID = gameIdCount;
         GameData game = new GameData(gameID, null, null, gameName, new ChessGame());
         games.put(gameID, game);
-        gameID_count++;
+        gameIdCount++;
         return gameID;
     }
 
