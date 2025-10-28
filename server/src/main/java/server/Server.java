@@ -143,9 +143,9 @@ public class Server {
                     return;
                 }
                 Collection<GameData> games = gameService.returnGames(authToken);
-                Map<String, Object> wrapper = Map.of("games", games);
+                Map<String, Object> mapFix = Map.of("games", games);
                 ctx.status(200);
-                ctx.result(serializer.toJson(wrapper));
+                ctx.result(serializer.toJson(mapFix));
             } catch (DataAccessException e) {
                 ctx.status(401);
                 ctx.result("{\"message\": \"Error: unauthorized\"}");

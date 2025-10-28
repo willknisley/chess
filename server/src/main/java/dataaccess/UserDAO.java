@@ -1,7 +1,6 @@
 package dataaccess;
 
-import chess.ChessGame;
-import model.GameData;
+
 import model.UserData;
 import java.util.HashMap;
 
@@ -25,6 +24,4 @@ public class UserDAO {
             throw new DataAccessException("Error: (username does not exist)");
         }
     }
-    //public GameData createGame(String gameName, ChessGame game) throws DataAccessException {
-    //}
 }
