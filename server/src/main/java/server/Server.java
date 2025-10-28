@@ -142,7 +142,7 @@ public class Server {
                     ctx.result("{\"message\": \"Error: unauthorized\"}");
                     return;
                 }
-                Collection<GameData> games = gameService.return_games(authToken);
+                Collection<GameData> games = gameService.returnGames(authToken);
                 //var responseJson = serializer.toJson(games);
                 Map<String, Object> wrapper = Map.of("games", games);
                 ctx.status(200);
@@ -156,6 +156,38 @@ public class Server {
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
              }
 
+        });
+
+        javalin.post("/game", ctx -> {
+            try {
+                var serializer = new Gson();
+                String authToken = ctx.header("authorization");
+
+                if (authToken == null || authToken.isEmpty()) {
+                    ctx.status(401);
+                    ctx.result("{\"message\": \"Error: unauthorized\"}");
+                    return;
+                }
+                var json = ctx.body();
+                var hashMap = serializer.fromJson(json, HashMap.class);
+                String gameName = (String) hashMap.get("gameName");
+                if (gameName == null || gameName.isEmpty()) {
+                    ctx.status(400);
+                    ctx.result("{\"message\": \"Error: bad request\"}");
+                    return;
+                }
+
+                int gameID = gameService.createGame(authToken, gameName);
+                ctx.status(200);
+                ctx.result("{\"gameID\": " + gameID + "}");
+
+            } catch (DataAccessException e) {
+                ctx.status(401);
+                ctx.result("{\"message\": \"Error: unauthorized\"}");
+            } catch (Exception e) {
+                ctx.status(500);
+                ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
+            }
         });
 
 

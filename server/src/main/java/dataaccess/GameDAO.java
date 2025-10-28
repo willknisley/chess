@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
 
 import java.util.Collection;
@@ -15,6 +16,14 @@ public class GameDAO {
 
     public Collection<GameData> listGames() {
         return games.values();
+    }
+
+    public int createGame(String gameName) {
+        int gameID = gameID_count;
+        GameData game = new GameData(gameID, null, null, gameName, new ChessGame());
+        games.put(gameID, game);
+        gameID_count++;
+        return gameID;
     }
 
 }
