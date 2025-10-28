@@ -4,7 +4,6 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import jakarta.servlet.UnavailableException;
 import model.AuthData;
 import model.GameData;
 
@@ -33,6 +32,16 @@ public class GameService {
                 throw new DataAccessException("Unauthorized");
             }
             return gameDAO.createGame(gameName);
+        }
+
+        public void joinGame(String authToken, int gameID, String playerColor) throws DataAccessException {
+            AuthData auth = authDAO.getAuth(authToken);
+            if (auth == null) {
+                throw new DataAccessException("Unauthorized");
+            }
+            String username = auth.username();
+            gameDAO.joinGame(gameID, playerColor, username);
+
         }
 
     }

@@ -143,11 +143,9 @@ public class Server {
                     return;
                 }
                 Collection<GameData> games = gameService.returnGames(authToken);
-                //var responseJson = serializer.toJson(games);
                 Map<String, Object> wrapper = Map.of("games", games);
                 ctx.status(200);
                 ctx.result(serializer.toJson(wrapper));
-                //ctx.result(responseJson);
             } catch (DataAccessException e) {
                 ctx.status(401);
                 ctx.result("{\"message\": \"Error: unauthorized\"}");
@@ -184,6 +182,48 @@ public class Server {
             } catch (DataAccessException e) {
                 ctx.status(401);
                 ctx.result("{\"message\": \"Error: unauthorized\"}");
+            } catch (Exception e) {
+                ctx.status(500);
+                ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
+            }
+        });
+
+        javalin.put("/game", ctx -> {
+            try {
+                var serializer = new Gson();
+                String authToken = ctx.header("authorization");
+
+                if (authToken == null || authToken.isEmpty()) {
+                    ctx.status(401);
+                    ctx.result("{\"message\": \"Error: unauthorized\"}");
+                    return;
+                }
+                var json = ctx.body();
+                var hashMap = serializer.fromJson(json, HashMap.class);
+                String playerColor = (String) hashMap.get("playerColor");
+                Number gameIDNum = (Number) hashMap.get("gameID");
+                if (playerColor == null || playerColor.isEmpty() || (hashMap.get("gameID") == null)) {
+                    ctx.status(400);
+                    ctx.result("{\"message\": \"Error: bad request\"}");
+                    return;
+                }
+                int gameID = gameIDNum.intValue();
+                gameService.joinGame(authToken, gameID, playerColor);
+                ctx.status(200);
+                ctx.result("{}");
+
+            } catch (DataAccessException e) {
+                if (e.getMessage().contains("taken")) {
+                    ctx.status(403);
+                    ctx.result("{\"message\": \"Error: already taken\"}");
+                } else if (e.getMessage().contains("Invalid color") || e.getMessage().contains("Game does not exist")) {
+                    ctx.status(400);
+                    ctx.result("{\"message\": \"Error: bad request\"}");
+                }
+                else {
+                    ctx.status(401);
+                    ctx.result("{\"message\": \"Error: unauthorized\"}");
+                }
             } catch (Exception e) {
                 ctx.status(500);
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
