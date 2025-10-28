@@ -32,10 +32,7 @@ public class Server {
         authDAO = new AuthDAO();
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(userDAO, gameDAO, authDAO);
-
-
         // Register your endpoints and exception handlers here.
-
         javalin.delete("/db", ctx -> {
             try {
                 new ClearService(userDAO, gameDAO, authDAO).clearAll();
@@ -61,7 +58,6 @@ public class Server {
                     ctx.status(400);
                     return;
                 }
-
                 AuthData result = userService.register(username, password, email);
                 var responseJson = serializer.toJson(result);
                 ctx.result(responseJson);
@@ -79,7 +75,6 @@ public class Server {
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
             }
         });
-
         javalin.post("/session", ctx -> {
             try {
                 var serializer = new Gson();
@@ -93,7 +88,6 @@ public class Server {
                     ctx.status(400);
                     return;
                 }
-
                 AuthData result = userService.login(username, password);
                 var responseJson = serializer.toJson(result);
                 ctx.result(responseJson);
@@ -111,7 +105,6 @@ public class Server {
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
             }
         });
-
         javalin.delete("/session", ctx -> {
             try {
                 String authToken = ctx.header("authorization");
@@ -123,7 +116,6 @@ public class Server {
                 userService.logout(authToken);
                 ctx.status(200);
                 ctx.result("{}");
-
             } catch (DataAccessException e) {
                 ctx.status(401);
                 ctx.result("{\"message\": \"Error: unauthorized\"}");
@@ -132,7 +124,6 @@ public class Server {
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
             }
         });
-
         javalin.get("/game", ctx -> {
             try {
                 var serializer = new Gson();
@@ -153,9 +144,7 @@ public class Server {
                 ctx.status(500);
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
              }
-
         });
-
         javalin.post("/game", ctx -> {
             try {
                 var serializer = new Gson();
@@ -174,11 +163,9 @@ public class Server {
                     ctx.result("{\"message\": \"Error: bad request\"}");
                     return;
                 }
-
                 int gameID = gameService.createGame(authToken, gameName);
                 ctx.status(200);
                 ctx.result("{\"gameID\": " + gameID + "}");
-
             } catch (DataAccessException e) {
                 ctx.status(401);
                 ctx.result("{\"message\": \"Error: unauthorized\"}");
@@ -187,12 +174,10 @@ public class Server {
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
             }
         });
-
         javalin.put("/game", ctx -> {
             try {
                 var serializer = new Gson();
                 String authToken = ctx.header("authorization");
-
                 if (authToken == null || authToken.isEmpty()) {
                     ctx.status(401);
                     ctx.result("{\"message\": \"Error: unauthorized\"}");
@@ -211,7 +196,6 @@ public class Server {
                 gameService.joinGame(authToken, gameID, playerColor);
                 ctx.status(200);
                 ctx.result("{}");
-
             } catch (DataAccessException e) {
                 if (e.getMessage().contains("taken")) {
                     ctx.status(403);
@@ -229,17 +213,11 @@ public class Server {
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
             }
         });
-
-
-
-
     }
-
     public int run(int desiredPort) {
         javalin.start(desiredPort);
         return javalin.port();
     }
-
     public void stop() {
         javalin.stop();
     }
