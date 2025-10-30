@@ -23,7 +23,7 @@ public class DatabaseManager {
         var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
         try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
              var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate(statement);
         } catch (SQLException ex) {
             throw new DataAccessException("failed to create database", ex);
         }

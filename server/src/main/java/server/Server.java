@@ -1,10 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import io.javalin.*;
 import model.AuthData;
 import model.GameData;
@@ -26,6 +23,11 @@ public class Server {
     private final GameService gameService;
 
     public Server() {
+        try {
+            DatabaseManager.createDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Failed to initialize database", e);
+        }
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         userDAO = new UserDAO();
         gameDAO = new GameDAO();
