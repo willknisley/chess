@@ -39,11 +39,11 @@ public class Server {
         javalin.delete("/db", ctx -> {
             try {
                 new ClearService(userDAO, gameDAO, authDAO).clearAll();
-                ctx.result("{}");
                 ctx.status(200);
+                ctx.result("{}");
             } catch (Exception e) {
-                ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
                 ctx.status(500);
+                ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
             }
         });
 
@@ -57,14 +57,14 @@ public class Server {
                 String password = (String) hashMap.get("password");
                 String email = (String) hashMap.get("email");
                 if (username == null || username.isEmpty() || password == null || password.isEmpty() || email == null || email.isEmpty()) {
-                    ctx.result("{\"message\": \"Error: bad request\"}");
                     ctx.status(400);
+                    ctx.result("{\"message\": \"Error: bad request\"}");
                     return;
                 }
                 AuthData result = userService.register(username, password, email);
+                ctx.status(200);
                 var responseJson = serializer.toJson(result);
                 ctx.result(responseJson);
-                ctx.status(200);
             } catch (DataAccessException e) {
                 if (e.getMessage().contains("already exists")) {
                     ctx.status(403);
@@ -87,14 +87,14 @@ public class Server {
                 String username = (String) hashMap.get("username");
                 String password = (String) hashMap.get("password");
                 if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
-                    ctx.result("{\"message\": \"Error: bad request\"}");
                     ctx.status(400);
+                    ctx.result("{\"message\": \"Error: bad request\"}");
                     return;
                 }
                 AuthData result = userService.login(username, password);
+                ctx.status(200);
                 var responseJson = serializer.toJson(result);
                 ctx.result(responseJson);
-                ctx.status(200);
             } catch (DataAccessException e) {
                 if (e.getMessage().contains("username does not exist") || e.getMessage().contains("Wrong password") || e.getMessage().contains("unauthorized")) {
                     ctx.status(401);
@@ -146,7 +146,7 @@ public class Server {
                 ctx.status(200);
                 ctx.result(serializer.toJson(mapFix));
             } catch (DataAccessException e) {
-                if (e.getMessage().equals("authToken does not exist")) {
+                if (e.getMessage().contains("authToken does not exist")) {
                     ctx.status(401);
                     ctx.result("{\"message\": \"Error: unauthorized\"}");
                 } else {

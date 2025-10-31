@@ -83,7 +83,7 @@ public class SQLGameDAO {
             String blackUsername = rs.getString("blackUsername");
 
             if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
-                throw new DataAccessException("Wrong player color");
+                throw new DataAccessException("Invalid color");
             } else if (playerColor.equals("WHITE") && whiteUsername != null) {
                 throw new DataAccessException("already taken");
             } else if (playerColor.equals("BLACK") && blackUsername != null) {
@@ -101,7 +101,7 @@ public class SQLGameDAO {
             updateStatement.setInt(2, gameID);
             updateStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("Error clearing users", e);
+            throw new DataAccessException("Wrong player color", e);
         }
     }
 

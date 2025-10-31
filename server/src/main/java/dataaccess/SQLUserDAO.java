@@ -27,7 +27,7 @@ public void clear() throws DataAccessException {
             statement.setString(3, user.email());
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("Error clearing users", e);
+            throw new DataAccessException("already exists", e);
         }
     }
 

@@ -6,7 +6,7 @@ import java.sql.SQLException;
 public class SQLAuthDAO {
 
     public void clear () throws DataAccessException {
-        var sqlClear = "DELETE FROM users";
+        var sqlClear = "DELETE FROM auth";
         try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sqlClear)) {
             statement.executeUpdate();
@@ -29,13 +29,24 @@ public class SQLAuthDAO {
     }
 
         public void deleteAuth(String token) throws DataAccessException {
-        var sqlDeleteAuth = "DELETE FROM auth WHERE authToken = ?";
+            var sqlDeleteCheck = "SELECT * FROM auth WHERE authToken = ?";
             try (var conn = DatabaseManager.getConnection();
-                 var statement = conn.prepareStatement(sqlDeleteAuth)) {
-                statement.setString(1, token);
-                statement.executeUpdate();
+                 var firstStatement = conn.prepareStatement(sqlDeleteCheck)) {
+
+                firstStatement.setString(1, token);
+                var rs = firstStatement.executeQuery();
+
+                if (!rs.next()) {
+                    throw new DataAccessException("authToken does not exist");
+                }
+
+                var sqlDelete = "DELETE FROM auth WHERE authToken = ?";
+                try (var secondStatement = conn.prepareStatement(sqlDelete)) {
+                    secondStatement.setString(1, token);
+                    secondStatement.executeUpdate();
+                }
             } catch (SQLException e) {
-                throw new DataAccessException("Error clearing users", e);
+                throw new DataAccessException("Database error", e);
             }
         }
 
