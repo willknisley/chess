@@ -120,8 +120,13 @@ public class Server {
                 ctx.status(200);
                 ctx.result("{}");
             } catch (DataAccessException e) {
-                ctx.status(401);
-                ctx.result("{\"message\": \"Error: unauthorized\"}");
+                if (e.getMessage().equals("authToken does not exist")) {
+                    ctx.status(401);
+                    ctx.result("{\"message\": \"Error: unauthorized\"}");
+                } else {
+                    ctx.status(500);
+                    ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
+                }
             } catch (Exception e) {
                 ctx.status(500);
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
@@ -141,8 +146,13 @@ public class Server {
                 ctx.status(200);
                 ctx.result(serializer.toJson(mapFix));
             } catch (DataAccessException e) {
-                ctx.status(401);
-                ctx.result("{\"message\": \"Error: unauthorized\"}");
+                if (e.getMessage().equals("authToken does not exist")) {
+                    ctx.status(401);
+                    ctx.result("{\"message\": \"Error: unauthorized\"}");
+                } else {
+                    ctx.status(500);
+                    ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
+                }
             } catch (Exception e) {
                 ctx.status(500);
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
@@ -170,8 +180,13 @@ public class Server {
                 ctx.status(200);
                 ctx.result("{\"gameID\": " + gameID + "}");
             } catch (DataAccessException e) {
-                ctx.status(401);
-                ctx.result("{\"message\": \"Error: unauthorized\"}");
+                if (e.getMessage().equals("authToken does not exist")) {
+                    ctx.status(401);
+                    ctx.result("{\"message\": \"Error: unauthorized\"}");
+                } else {
+                    ctx.status(500);
+                    ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
+                }
             } catch (Exception e) {
                 ctx.status(500);
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
@@ -206,10 +221,12 @@ public class Server {
                 } else if (e.getMessage().contains("Invalid color") || e.getMessage().contains("Game does not exist")) {
                     ctx.status(400);
                     ctx.result("{\"message\": \"Error: bad request\"}");
-                }
-                else {
+                } else if (e.getMessage().equals("authToken does not exist")) {
                     ctx.status(401);
                     ctx.result("{\"message\": \"Error: unauthorized\"}");
+                } else {
+                    ctx.status(500);
+                    ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
                 }
             } catch (Exception e) {
                 ctx.status(500);

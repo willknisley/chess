@@ -54,7 +54,7 @@ public class SQLAuthDAO {
                     throw new DataAccessException("authToken does not exist");
                 }
             } catch (SQLException e) {
-                throw new DataAccessException("Error clearing users", e);
+                throw new DataAccessException("Database error", e);
             }
         }
     }
