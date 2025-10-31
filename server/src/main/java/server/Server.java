@@ -17,7 +17,7 @@ public class Server {
 
     private final Javalin javalin;
     private final SQLUserDAO userDAO;
-    private final GameDAO gameDAO;
+    private final SQLGameDAO gameDAO;
     private final SQLAuthDAO authDAO;
     private final UserService userService;
     private final GameService gameService;
@@ -31,7 +31,7 @@ public class Server {
         }
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         userDAO = new SQLUserDAO();
-        gameDAO = new GameDAO();
+        gameDAO = new SQLGameDAO();
         authDAO = new SQLAuthDAO();
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(userDAO, gameDAO, authDAO);

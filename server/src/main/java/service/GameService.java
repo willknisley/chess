@@ -9,10 +9,10 @@ import java.util.Collection;
 
 public class GameService {
         private final SQLUserDAO userDAO;
-        private final GameDAO gameDAO;
+        private final SQLGameDAO gameDAO;
         private final SQLAuthDAO authDAO;
 
-        public GameService(SQLUserDAO userDAO, GameDAO gameDAO, SQLAuthDAO authDAO) {
+        public GameService(SQLUserDAO userDAO, SQLGameDAO gameDAO, SQLAuthDAO authDAO) {
             this.userDAO = userDAO;
             this.gameDAO = gameDAO;
             this.authDAO = authDAO;

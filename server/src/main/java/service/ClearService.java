@@ -3,10 +3,10 @@ import dataaccess.*;
 
 public class ClearService {
     private final SQLUserDAO userDAO;
-    private final GameDAO gameDAO;
+    private final SQLGameDAO gameDAO;
     private final SQLAuthDAO authDAO;
 
-    public ClearService(SQLUserDAO userDAO, GameDAO gameDAO, SQLAuthDAO authDAO) {
+    public ClearService(SQLUserDAO userDAO, SQLGameDAO gameDAO, SQLAuthDAO authDAO) {
         this.userDAO = userDAO;
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
