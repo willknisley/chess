@@ -16,7 +16,7 @@ import java.util.Map;
 public class Server {
 
     private final Javalin javalin;
-    private final UserDAO userDAO;
+    private final SQLUserDAO userDAO;
     private final GameDAO gameDAO;
     private final AuthDAO authDAO;
     private final UserService userService;
@@ -25,11 +25,12 @@ public class Server {
     public Server() {
         try {
             DatabaseManager.createDatabase();
+            DatabaseManager.createTables();
         } catch (DataAccessException e) {
             throw new RuntimeException("Failed to initialize database", e);
         }
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
-        userDAO = new UserDAO();
+        userDAO = new SQLUserDAO();
         gameDAO = new GameDAO();
         authDAO = new AuthDAO();
         userService = new UserService(userDAO, authDAO);

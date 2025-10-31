@@ -3,11 +3,14 @@ package dataaccess;
 import java.sql.*;
 import java.util.Properties;
 
+import static java.sql.DriverManager.getConnection;
+
 public class DatabaseManager {
     private static String databaseName;
     private static String dbUsername;
     private static String dbPassword;
     private static String connectionUrl;
+    private static String tableName;
 
     /*
      * Load the database information for the db.properties file.
@@ -26,6 +29,43 @@ public class DatabaseManager {
             preparedStatement.executeUpdate(statement);
         } catch (SQLException ex) {
             throw new DataAccessException("failed to create database", ex);
+        }
+    }
+
+    static public void createTables() throws DataAccessException {
+        try (var conn = getConnection()) {
+             var createUserTable = """
+             CREATE TABLE IF NOT EXISTS users (
+                     username VARCHAR(255) PRIMARY KEY,
+                     password VARCHAR(255) NOT NULL,
+                     email VARCHAR(255) NOT NULL
+            )
+        """;
+
+             var createAuthTable = """
+                     CREATE TABLE IF NOT EXISTS auth (
+                        authToken VARCHAR(255) PRIMARY KEY,
+                        username VARCHAR(255) NOT NULL
+             ) 
+        """;
+
+             var createGameTable = """
+                     CREATE TABLE IF NOT EXISTS game (
+                     gameID INT PRIMARY KEY AUTO_INCREMENT,
+                     whiteUsername VARCHAR(255),
+                     blackUsername VARCHAR(255),
+                     gameName VARCHAR(255) NOT NULL,
+                     game TEXT
+             )
+          """;
+
+             try (var statement = conn.createStatement()) {
+                 statement.executeUpdate(createUserTable);
+                 statement.executeUpdate(createAuthTable);
+                 statement.executeUpdate(createGameTable);
+             }
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to create table", ex);
         }
     }
 

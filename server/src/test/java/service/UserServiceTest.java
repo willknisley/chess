@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,13 +8,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest
 {
-    private UserDAO userDAO;
+    private SQLUserDAO userDAO;
     private GameDAO gameDAO;
     private AuthDAO authDAO;
 
     @BeforeEach
-    public void setup() {
-        userDAO = new UserDAO();
+    public void setup() throws DataAccessException {
+        userDAO = new SQLUserDAO();
         gameDAO = new GameDAO();
         authDAO = new AuthDAO();
 
