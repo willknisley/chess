@@ -11,13 +11,13 @@ public class ClearServiceTest {
     private ClearService clearService;
     private SQLUserDAO userDAO;
     private GameDAO gameDAO;
-    private AuthDAO authDAO;
+    private SQLAuthDAO authDAO;
 
     @BeforeEach
     public void setup() throws DataAccessException {
         userDAO = new SQLUserDAO();
         gameDAO = new GameDAO();
-        authDAO = new AuthDAO();
+        authDAO = new SQLAuthDAO();
         clearService = new ClearService(userDAO, gameDAO, authDAO);
 
         userDAO.clear();

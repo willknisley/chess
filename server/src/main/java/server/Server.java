@@ -18,7 +18,7 @@ public class Server {
     private final Javalin javalin;
     private final SQLUserDAO userDAO;
     private final GameDAO gameDAO;
-    private final AuthDAO authDAO;
+    private final SQLAuthDAO authDAO;
     private final UserService userService;
     private final GameService gameService;
 
@@ -32,7 +32,7 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         userDAO = new SQLUserDAO();
         gameDAO = new GameDAO();
-        authDAO = new AuthDAO();
+        authDAO = new SQLAuthDAO();
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(userDAO, gameDAO, authDAO);
         // Register your endpoints and exception handlers here.
