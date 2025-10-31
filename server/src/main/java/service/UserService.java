@@ -3,6 +3,7 @@ package service;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 
@@ -26,7 +27,7 @@ public class UserService {
 
     public AuthData login(String username, String password) throws DataAccessException {
         UserData user = userDAO.getUser(username);
-        if (!Objects.equals(password, user.password())) {
+        if (!BCrypt.checkpw(password, user.password())) {
             throw new DataAccessException("Wrong password");
         }
         String authToken = java.util.UUID.randomUUID().toString();
