@@ -9,14 +9,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ClearServiceTest {
     private ClearService clearService;
-    private SQLUserDAO userDAO;
-    private SQLGameDAO gameDAO;
+    private SQLUserDAOTest userDAO;
+    private SQLGameDAOTest gameDAO;
     private SQLAuthDAO authDAO;
 
     @BeforeEach
     public void setup() throws DataAccessException {
-        userDAO = new SQLUserDAO();
-        gameDAO = new SQLGameDAO();
+        userDAO = new SQLUserDAOTest();
+        gameDAO = new SQLGameDAOTest();
         authDAO = new SQLAuthDAO();
         clearService = new ClearService(userDAO, gameDAO, authDAO);
 
