@@ -19,4 +19,7 @@ public class ServerFacade {
 
     public AuthData login(String username, String password) {
     }
+
+    public AuthData register(String username, String password, String email) {
+    }
 }

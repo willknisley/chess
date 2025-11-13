@@ -39,11 +39,25 @@ public class Main {
                 System.out.println("Exiting application");
                 running = false;
             } else if (command.equals("register")) {
-                //register
+                if (bits.length == 4) {
+                    String username = bits[1];
+                    String password = bits[2];
+                    String email = bits[3];
+
+                    try {
+                        AuthData result = server.register(username, password, email);
+                        System.out.println("Registration successful");
+                    } catch (Exception e) {
+                        System.out.println("Registration failed: " + e.getMessage());
+                    }
+                } else {
+                    System.out.println("Proper register format: <username> <password> <email>");
+                }
             } else if (command.equals("login")) {
                 if (bits.length == 3) {
                     String username = bits[1];
                     String password = bits[2];
+
                     try {
                         AuthData result = server.login(username, password);
                         System.out.println("Login successful");
@@ -51,7 +65,7 @@ public class Main {
                         System.out.println("Login failed: " + e.getMessage());
                     }
                 } else {
-                    System.out.println("Proper login syntax: <username> <password>");
+                    System.out.println("Proper login format: <username> <password>");
                 }
             } else if (!command.isEmpty()) {
                 System.out.println("Unknown command. Type 'help' for available commands.");
