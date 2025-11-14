@@ -75,13 +75,13 @@ public class Main {
         scanner.close();
     }
 
-    public static void postLoginUI() {
+    public static void postLoginUI(String authToken) {
         Scanner scanner = new Scanner(System.in);
         ServerFacade server = new ServerFacade("http://localhost:8080");
         boolean running = true;
 
         while (running) {
-            System.out.print("[LOGGED_OUT] >>> ");
+            System.out.print("[LOGGED_IN] >>> ");
             String input = scanner.nextLine();
             String[] bits = input.split("\\s+");
             String command = bits.length > 0 ? bits[0].toLowerCase() : "";
@@ -94,10 +94,17 @@ public class Main {
                 System.out.println("join <ID> [WHITE|BLACK] - joins a game");
                 System.out.println("logout - logs out the user");
                 System.out.println("observe - watch a game");
-            }
-
+            } else if (command.equals("logout")) {
+                try {
+                    server.logout(authToken);
+                    System.out.println("Logout successful");
+                    running = false;
+                } catch (Exception e) {
+                    System.out.println("Logout failed: " + e.getMessage());
+                }
             }
         }
+        scanner.close();
     }
 
 }
