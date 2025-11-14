@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import model.AuthData;
+import model.UserData;
 
 import java.net.*;
 import java.net.http.*;
@@ -21,5 +22,8 @@ public class ServerFacade {
     }
 
     public AuthData register(String username, String password, String email) {
+    }
+    public UserData logout(String authToken) {
+
     }
 }
