@@ -26,4 +26,13 @@ public class ServerFacade {
     public UserData logout(String authToken) {
 
     }
+
+    public AuthData createGame(String name, String authToken) {
+    }
+
+    public Object listGames(String authToken) {
+    }
+
+    public void joinGame(int gameID, String playerColor, String authToken) {
+    }
 }
