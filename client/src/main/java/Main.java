@@ -4,6 +4,7 @@ import model.GameData;
 import server.ServerFacade;
 
 import java.io.PrintStream;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -13,7 +14,7 @@ import static ui.EscapeSequences.*;
 public class Main {
 
     public static void main(String[] args) {
-        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, PAWN);
         //System.out.println("♕ 240 Chess Client: " + piece);
         System.out.println("♕ Welcome to 240 Chess Client: Type help to get started");
         preloginUI();
@@ -155,7 +156,7 @@ public class Main {
 
                         ChessBoard board = new ChessBoard();
                         board.resetBoard();
-                        drawChessBoard(System.out, board);
+                        drawChessBoard(System.out, board, playerColor);
                     } catch (Exception e) {
                         System.out.println("Game joining failed" + e.getMessage());
                     }
@@ -172,7 +173,8 @@ public class Main {
 
                         ChessBoard board = new ChessBoard();
                         board.resetBoard();
-                        drawChessBoard(System.out, board);
+                        String playerColor = "WHITE";
+                        drawChessBoard(System.out, board, playerColor);
                     } catch (Exception e) {
                         System.out.println("Game observation failed" + e.getMessage());
                     }
@@ -187,7 +189,7 @@ public class Main {
     }
 
     private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 6;
+    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
     private static final int LINE_WIDTH_IN_PADDED_CHARS = 1;
     private static final String EMPTY = "   ";
 
@@ -281,13 +283,23 @@ public class Main {
         setBlack(out);
     }
 
-        private static void drawChessBoard(PrintStream out, ChessBoard chess) {
+        private static void drawChessBoard(PrintStream out, ChessBoard chess, String playerColor) {
             drawHeaders(out);
-            for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
+            if (Objects.equals(playerColor, "WHITE")) {
+                for (int boardRow = 7; boardRow >= 0; --boardRow) {
 
-                drawRowOfSquares(out,boardRow, chess);
-                if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
-                    setBlack(out);
+                    drawRowOfSquares(out, boardRow, chess);
+                    if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
+                        setBlack(out);
+                    }
+                }
+            } else if (Objects.equals(playerColor, "BLACK")) {
+                for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
+
+                    drawRowOfSquares(out, boardRow, chess);
+                    if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
+                        setBlack(out);
+                    }
                 }
             }
             drawHeaders(out);
