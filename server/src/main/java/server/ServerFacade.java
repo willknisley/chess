@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
 import java.net.*;
@@ -9,6 +10,7 @@ import java.net.http.*;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Collection;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
@@ -30,7 +32,7 @@ public class ServerFacade {
     public AuthData createGame(String name, String authToken) {
     }
 
-    public Object listGames(String authToken) {
+    public Collection<GameData> listGames(String authToken) {
     }
 
     public void joinGame(int gameID, String playerColor, String authToken) {
