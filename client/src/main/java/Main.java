@@ -11,9 +11,11 @@ import static chess.ChessPiece.PieceType.*;
 import static ui.EscapeSequences.*;
 
 public class Main {
+
     public static void main(String[] args) {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        System.out.println("♕ 240 Chess Client: " + piece);
+        //System.out.println("♕ 240 Chess Client: " + piece);
+        System.out.println("♕ Welcome to 240 Chess Client: Type help to get started");
         preloginUI();
     }
 
@@ -81,9 +83,6 @@ public class Main {
                 System.out.println("Proper register format: <username> <password> <email>");
             }
         }
-
-
-        scanner.close();
     }
 
     public static void postLoginUI(String authToken) {
@@ -117,7 +116,7 @@ public class Main {
                 if (bits.length == 2) {
                     String name = bits[1];
                     try {
-                        AuthData result = server.createGame(name, authToken);
+                        GameData result = server.createGame(name, authToken);
                         System.out.println("Game creation successful: " + result.gameID());
                     } catch (Exception e){
                         System.out.println("Game creation failed: " + e.getMessage());
@@ -185,7 +184,6 @@ public class Main {
                 System.out.println("Unknown command. Type 'help' for available commands.");
             }
         }
-        scanner.close();
     }
 
     private static final int BOARD_SIZE_IN_SQUARES = 8;
@@ -339,8 +337,8 @@ public class Main {
                         }
                     }
 
-                    out.println();
                 }
+                out.println();
             }
         }
 
@@ -362,6 +360,4 @@ public class Main {
 
             setWhite(out);
         }
-    }
-
 }
