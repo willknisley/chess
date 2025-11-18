@@ -154,8 +154,21 @@ public class Main {
                 } else {
                     System.out.println("Proper join format: <ID> [WHITE|BLACK]");
                 }
-            }
-            else if (!command.isEmpty()) {
+            } else if (command.equals("observe")) {
+                if (bits.length == 2) {
+                    String gameIDString = bits[1];
+                    int gameID = Integer.parseInt(gameIDString);
+                    try {
+                        server.observeGame(gameID, authToken);
+                        System.out.println("Game observation successful");
+                    } catch (Exception e) {
+                        System.out.println("Game observation failed" + e.getMessage());
+                    }
+                } else {
+                    System.out.println("Proper observe format: <ID>");
+                }
+
+            } else if (!command.isEmpty()) {
                 System.out.println("Unknown command. Type 'help' for available commands.");
             }
         }

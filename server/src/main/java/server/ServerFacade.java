@@ -35,4 +35,7 @@ public class ServerFacade {
 
     public void joinGame(int gameID, String playerColor, String authToken) {
     }
+
+    public void observeGame(int gameID, String authToken) {
+    }
 }
