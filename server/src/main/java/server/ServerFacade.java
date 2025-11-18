@@ -71,7 +71,7 @@ public class ServerFacade {
         GET, POST, PUT, DELETE
     }
 
-    private <ResponseType> ResponseType makeRequest(HttpMethod method, String path, Object request, Class<ResponseType> responseClass, String authToken) throws Exception {
+    private <T> T makeRequest(HttpMethod method, String path, Object request, Class<T> responseClass, String authToken) throws Exception {
         URI uri = URI.create(serverUrl + path);
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(uri)
