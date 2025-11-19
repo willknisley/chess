@@ -176,7 +176,7 @@ public class Main {
                         String playerColor = "WHITE";
                         drawChessBoard(System.out, board, playerColor);
                     } catch (Exception e) {
-                        System.out.println("Game observation failed" + e.getMessage());
+                        System.out.println("Game observation failed: " + e.getMessage());
                     }
                 } else {
                     System.out.println("Proper observe format: <ID>");
@@ -189,8 +189,7 @@ public class Main {
     }
 
     private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
-    private static final int LINE_WIDTH_IN_PADDED_CHARS = 1;
+    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 1;
     private static final String EMPTY = "   ";
 
 
@@ -215,29 +214,10 @@ public class Main {
         return "   ";
     }
 
-    private static void drawSides(PrintStream out) {
-
-        setBlack(out);
-
-        String[] headers = {"1", "2", "3", "4", "5", "6", "7", "8"};
-        for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
-            drawSide(out, headers[boardRow]);
-
-            if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
-                out.print(EMPTY.repeat(LINE_WIDTH_IN_PADDED_CHARS));
-            }
-        }
-
-        out.println();
-    }
-
     private static void drawSide(PrintStream out, String headerText) {
-        int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
-        int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
-
-        out.print(EMPTY.repeat(prefixLength));
-        printSideText(out, headerText);
-        out.print(EMPTY.repeat(suffixLength));
+        out.print(" ");
+        printHeaderText(out, headerText);
+        out.print(" ");
     }
 
     private static void printSideText(PrintStream out, String player) {
@@ -249,29 +229,23 @@ public class Main {
         setBlack(out);
     }
 
-    private static void drawHeaders(PrintStream out) {
+    private static void drawHeaders(PrintStream out, boolean flip) {
 
         setBlack(out);
 
         String[] headers = {"a", "b", "c", "d", "e", "f", "g", "h"};
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-            drawHeader(out, headers[boardCol]);
-
-            if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
-                out.print(EMPTY.repeat(LINE_WIDTH_IN_PADDED_CHARS));
-            }
+            int index = flip ? (BOARD_SIZE_IN_SQUARES - 1 - boardCol) : boardCol;
+            drawHeader(out, headers[index]);
         }
 
         out.println();
     }
 
     private static void drawHeader(PrintStream out, String headerText) {
-        int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
-        int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
-
-        out.print(EMPTY.repeat(prefixLength));
+        out.print(" ");
         printHeaderText(out, headerText);
-        out.print(EMPTY.repeat(suffixLength));
+        out.print(" ");
     }
 
     private static void printHeaderText(PrintStream out, String player) {
@@ -284,72 +258,83 @@ public class Main {
     }
 
         private static void drawChessBoard(PrintStream out, ChessBoard chess, String playerColor) {
-            drawHeaders(out);
-            if (Objects.equals(playerColor, "WHITE")) {
-                for (int boardRow = 7; boardRow >= 0; --boardRow) {
+        setBlack(out);
+            out.print(EMPTY);
 
-                    drawRowOfSquares(out, boardRow, chess);
-                    if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
-                        setBlack(out);
-                    }
+            if (Objects.equals(playerColor, "WHITE")) {
+                drawHeaders(out, false);
+                for (int boardRow = 7; boardRow >= 0; --boardRow) {
+                    drawRowOfSquares(out, boardRow, chess, boardRow + 1, false);
                 }
             } else if (Objects.equals(playerColor, "BLACK")) {
-                for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
-
-                    drawRowOfSquares(out, boardRow, chess);
-                    if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
-                        setBlack(out);
-                    }
+                drawHeaders(out, true);
+                for (int boardRow = 0; boardRow < 8; ++boardRow) {
+                    drawRowOfSquares(out, boardRow, chess, 8 - boardRow, true);
                 }
             }
-            drawHeaders(out);
+            setBlack(out);
+            out.print(EMPTY);
+            drawHeaders(out, !Objects.equals(playerColor, "WHITE"));
+
+            out.print(SET_BG_COLOR_BLACK);
+            out.print(SET_TEXT_COLOR_WHITE);
         }
 
-        private static void drawRowOfSquares(PrintStream out, int boardRow, ChessBoard chess) {
-
+        private static void drawRowOfSquares(PrintStream out, int boardRow, ChessBoard chess, int rowNumber, boolean flip) {
             for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_PADDED_CHARS; ++squareRow) {
+
+                if (squareRow == SQUARE_SIZE_IN_PADDED_CHARS / 2) {
+                    setBlack(out);
+                    drawSide(out, String.valueOf(rowNumber));
+                } else {
+                    setBlack(out);
+                    out.print(EMPTY);
+                }
+
                 for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
                     if ((boardRow + boardCol) % 2 == 0) {
                         setWhite(out);
+                        boolean isWhiteSquare = true;
 
                         if (squareRow == SQUARE_SIZE_IN_PADDED_CHARS / 2) {
                             int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
                             int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
-                            ChessPiece piece = chess.squares[boardRow][boardCol];
+                            int col = flip ? (BOARD_SIZE_IN_SQUARES - 1 - boardCol) : boardCol;
+                            ChessPiece piece = chess.squares[boardRow][col];
                             out.print(EMPTY.repeat(prefixLength));
                             String pieceString = convertPieceToString(piece);
-                            printPlayer(out, pieceString);
+                            printPlayer(out, pieceString, piece, isWhiteSquare);
                             out.print(EMPTY.repeat(suffixLength));
                         } else {
                             out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
                         }
-
-                        if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
-                            out.print(EMPTY.repeat(LINE_WIDTH_IN_PADDED_CHARS));
-                        }
-
 
                     } else {
                         setBlack(out);
+                        boolean isWhiteSquare = false;
                         if (squareRow == SQUARE_SIZE_IN_PADDED_CHARS / 2) {
                             int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
                             int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
-
-                            ChessPiece piece = chess.squares[boardRow][boardCol];
+                            int col = flip ? (BOARD_SIZE_IN_SQUARES - 1 - boardCol) : boardCol;
+                            ChessPiece piece = chess.squares[boardRow][col];
                             out.print(EMPTY.repeat(prefixLength));
                             String pieceString = convertPieceToString(piece);
-                            printPlayer(out, pieceString);
+                            printPlayer(out, pieceString, piece, isWhiteSquare);
                             out.print(EMPTY.repeat(suffixLength));
                         } else {
                             out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-                        }
-
-                        if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
-                            out.print(EMPTY.repeat(LINE_WIDTH_IN_PADDED_CHARS));
                         }
                     }
 
                 }
+                if (squareRow == SQUARE_SIZE_IN_PADDED_CHARS / 2) {
+                    setBlack(out);
+                    drawSide(out, String.valueOf(rowNumber));
+                } else {
+                    setBlack(out);
+                    out.print(EMPTY);
+                }
+
                 out.println();
             }
         }
@@ -364,12 +349,25 @@ public class Main {
             out.print(SET_TEXT_COLOR_BLACK);
         }
 
-        private static void printPlayer(PrintStream out, String player) {
-            out.print(SET_BG_COLOR_WHITE);
-            out.print(SET_TEXT_COLOR_BLACK);
+        private static void printPlayer(PrintStream out, String player, ChessPiece piece, boolean isWhiteSquare) {
+            if (isWhiteSquare) {
+                out.print(SET_BG_COLOR_WHITE);
+            } else {
+                out.print(SET_BG_COLOR_BLACK);
+            }
+
+            if (piece != null && piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                out.print(SET_TEXT_COLOR_BLUE);
+            } else if (piece != null) {
+                out.print(SET_TEXT_COLOR_RED);
+            }
 
             out.print(player);
 
-            setWhite(out);
+            if (isWhiteSquare) {
+                setWhite(out);
+            } else {
+                setBlack(out);
+            }
         }
 }
