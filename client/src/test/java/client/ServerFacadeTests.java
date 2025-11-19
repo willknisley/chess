@@ -2,10 +2,13 @@ package client;
 
 import dataaccess.DataAccessException;
 import model.AuthData;
+import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
 import service.UserService;
+
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static server.ServerFacade.HttpMethod.POST;
@@ -24,13 +27,6 @@ public class ServerFacadeTests {
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade("http://localhost:" + port);
     }
-
-
-
-    //createGame
-    //listgame
-    //joingame
-    //observegame
 
     @Test
     public void loginPositiveTest() throws Exception {
@@ -78,6 +74,79 @@ public class ServerFacadeTests {
 
         assertThrows(Exception.class, () -> {
             facade.logout(badAuthToken);
+        });
+    }
+
+    @Test
+    public void createGamePositiveTest() throws Exception {
+        AuthData authData = facade.register("username", "password", "test@email.com");
+        String authToken = authData.authToken();
+        GameData gameData =  facade.createGame("game", authToken);
+        assertTrue(gameData.gameID() > 0);
+    }
+
+    @Test
+    public void createGameNegativeTest() throws Exception {
+        String badToken = "badToken";
+        assertThrows(Exception.class, () -> {
+            facade.createGame("game", badToken);
+        });
+    }
+
+    @Test
+    public void listGamesPositiveTest() throws Exception {
+        AuthData authData = facade.register("username", "password", "test@email.com");
+        String authToken = authData.authToken();
+        facade.createGame("game", authToken);
+        Collection<GameData> games = facade.listGames(authToken);
+        assertEquals(1, games.size());
+    }
+
+    @Test
+    public void listGamesNegativeTest() throws Exception {
+        String badToken = "badToken";
+        assertThrows(Exception.class, () -> {
+            facade.listGames(badToken);
+        });
+    }
+
+    @Test
+    public void joinGamePositiveTest() throws Exception {
+        AuthData authData = facade.register("username", "password", "test@email.com");
+        String authToken = authData.authToken();
+        GameData gameData = facade.createGame("game", authToken);
+        int gameID = gameData.gameID();
+        assertDoesNotThrow(() -> {
+            facade.joinGame(gameID, "WHITE", authToken);
+        });
+    }
+
+    @Test
+    public void joinGameNegativeTest() throws Exception {
+        String badToken = "badToken";
+        int fakeID = 1;
+        assertThrows(Exception.class, () -> {
+            facade.joinGame(fakeID, "WHITE", badToken);
+        });
+    }
+
+    @Test
+    public void observeGamePositiveTest() throws Exception {
+        AuthData authData = facade.register("username", "password", "test@email.com");
+        String authToken = authData.authToken();
+        GameData gameData = facade.createGame("game", authToken);
+        int gameID = gameData.gameID();
+        assertDoesNotThrow(() -> {
+            facade.observeGame(gameID, authToken);
+        });
+    }
+
+    @Test
+    public void observeGameNegativeTest() throws Exception {
+        String badToken = "badToken";
+        int fakeID = 1;
+        assertThrows(Exception.class, () -> {
+            facade.observeGame(fakeID, badToken);
         });
     }
 
