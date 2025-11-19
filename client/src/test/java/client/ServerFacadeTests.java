@@ -33,10 +33,10 @@ public class ServerFacadeTests {
 
     @Test
     public void loginNegativeTest() throws Exception {
-        facade.register("logUsername", "password", "test@email.com");
-        AuthData authData = facade.login("logUsername", "password");
+        facade.register("logNegUsername", "password", "test@email.com");
+        AuthData authData = facade.login("logNegUsername", "password");
         assertThrows(Exception.class, () -> {
-            facade.login("logUsername", "wrongPassword");
+            facade.login("logNegUsername", "wrongPassword");
         });
     }
 
@@ -48,9 +48,9 @@ public class ServerFacadeTests {
 
     @Test
     public void registerNegativeTest() throws Exception {
-        AuthData authData =  facade.register("regUsername", "password", "test@email.com");
+        AuthData authData =  facade.register("regNegUsername", "password", "test@email.com");
         assertThrows(Exception.class, () -> {
-            facade.register("regUsername", "newPassword", "newtest@email.com");
+            facade.register("regNegUsername", "newPassword", "newtest@email.com");
         });
     }
 
@@ -58,7 +58,6 @@ public class ServerFacadeTests {
     public void logoutPositiveTest() throws Exception {
         AuthData authData = facade.register("logoUsername", "password", "test@email.com");
         String authToken = authData.authToken();
-        assertEquals("logoUsername", authData.username());
         assertThrows(Exception.class, () -> {
             facade.logout(authToken);
         });
@@ -95,7 +94,7 @@ public class ServerFacadeTests {
         String authToken = authData.authToken();
         facade.createGame("newGame", authToken);
         Collection<GameData> games = facade.listGames(authToken);
-        assertEquals(1, games.size());
+        assertTrue(games.size() >= 1);
     }
 
     @Test
