@@ -64,7 +64,7 @@ public class ServerFacade {
         var path = "/game";
         record JoinGameRequest(String playerColor, int gameID) {}
         var request = new JoinGameRequest(null, gameID);
-        makeRequest(PUT, path, request, null, authToken);
+        makeRequest(GET, path, request, null, authToken);
     }
 
     public enum HttpMethod {

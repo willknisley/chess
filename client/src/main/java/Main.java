@@ -57,6 +57,7 @@ public class Main {
                     try {
                         AuthData result = server.register(username, password, email);
                         System.out.println("Registration successful");
+                        postLoginUI(result.authToken());
                     } catch (Exception e) {
                         System.out.println("Registration failed: " + e.getMessage());
                     }
@@ -80,8 +81,6 @@ public class Main {
                 }
             } else if (!command.isEmpty()) {
                 System.out.println("Unknown command. Type 'help' for available commands.");
-            } else {
-                System.out.println("Proper register format: <username> <password> <email>");
             }
         }
     }
@@ -104,7 +103,7 @@ public class Main {
                 System.out.println("list - lists games");
                 System.out.println("join <ID> [WHITE|BLACK] - joins a game");
                 System.out.println("logout - logs out the user");
-                System.out.println("observe - watch a game");
+                System.out.println("observe <ID> - watch a game");
             } else if (command.equals("logout")) {
                 try {
                     server.logout(authToken);
@@ -143,22 +142,25 @@ public class Main {
                         }
                     }
                 } catch (Exception e) {
-                    System.out.println("Game listing failed" + e.getMessage());
+                    System.out.println("Game listing failed: " + e.getMessage());
                 }
             } else if (command.equals("join")) {
                 if (bits.length == 3) {
                     String gameIDString = bits[1];
                     String playerColor = bits[2];
-                    int gameID = Integer.parseInt(gameIDString);
                     try {
+                        int gameID = Integer.parseInt(gameIDString);
                         server.joinGame(gameID, playerColor, authToken);
                         System.out.println("Game joined successfully");
 
                         ChessBoard board = new ChessBoard();
                         board.resetBoard();
                         drawChessBoard(System.out, board, playerColor);
+
+                    } catch (NumberFormatException e) {
+                            System.out.println("Invalid game ID. Please enter a valid number.");
                     } catch (Exception e) {
-                        System.out.println("Game joining failed" + e.getMessage());
+                        System.out.println("Game joining failed: " + e.getMessage());
                     }
                 } else {
                     System.out.println("Proper join format: <ID> [WHITE|BLACK]");
@@ -166,8 +168,8 @@ public class Main {
             } else if (command.equals("observe")) {
                 if (bits.length == 2) {
                     String gameIDString = bits[1];
-                    int gameID = Integer.parseInt(gameIDString);
                     try {
+                        int gameID = Integer.parseInt(gameIDString);
                         server.observeGame(gameID, authToken);
                         System.out.println("Game observation successful");
 
@@ -175,6 +177,8 @@ public class Main {
                         board.resetBoard();
                         String playerColor = "WHITE";
                         drawChessBoard(System.out, board, playerColor);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid game ID. Please enter a valid number.");
                     } catch (Exception e) {
                         System.out.println("Game observation failed: " + e.getMessage());
                     }
