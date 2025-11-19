@@ -8,13 +8,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest
 {
-    private SQLUserDAOTest userDAO;
+    private SQLUserDAO userDAO;
     private GameDAO gameDAO;
     private SQLAuthDAO authDAO;
 
     @BeforeEach
     public void setup() throws DataAccessException {
-        userDAO = new SQLUserDAOTest();
+        userDAO = new SQLUserDAO();
         gameDAO = new GameDAO();
         authDAO = new SQLAuthDAO();
 

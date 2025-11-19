@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTest {
-    private SQLUserDAOTest userDAO;
-    private SQLGameDAOTest gameDAO;
+    private SQLUserDAO userDAO;
+    private SQLGameDAO gameDAO;
     private SQLAuthDAO authDAO;
 
         @BeforeEach
         public void setup() throws DataAccessException {
-            userDAO = new SQLUserDAOTest();
-            gameDAO = new SQLGameDAOTest();
+            userDAO = new SQLUserDAO();
+            gameDAO = new SQLGameDAO();
             authDAO = new SQLAuthDAO();
 
             userDAO.clear();
