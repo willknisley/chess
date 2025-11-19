@@ -5,6 +5,7 @@ import model.AuthData;
 import model.GameData;
 
 import java.util.Collection;
+import java.util.List;
 
 
 public class GameService {
@@ -20,7 +21,11 @@ public class GameService {
 
         public Collection<GameData> returnGames(String authToken) throws DataAccessException {
             authDAO.getAuth(authToken);
-            return gameDAO.listGames();
+            var games = gameDAO.listGames();
+            if (!games.isEmpty()) {
+                return List.of(games.iterator().next());
+            }
+            return games;
         }
 
         public int createGame(String authToken, String gameName) throws DataAccessException {
@@ -40,5 +45,4 @@ public class GameService {
             gameDAO.joinGame(gameID, playerColor, username);
 
         }
-
     }
