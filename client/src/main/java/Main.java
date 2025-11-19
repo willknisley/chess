@@ -1,11 +1,10 @@
 import chess.*;
 import model.AuthData;
 import model.GameData;
-import server.ServerFacade;
+import ui.ServerFacade;
 
 import java.io.PrintStream;
 import java.util.Objects;
-import java.util.Random;
 import java.util.Scanner;
 
 import static chess.ChessPiece.PieceType.*;
@@ -15,7 +14,6 @@ public class Main {
 
     public static void main(String[] args) {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, PAWN);
-        //System.out.println("♕ 240 Chess Client: " + piece);
         System.out.println("♕ Welcome to 240 Chess Client: Type help to get started");
         preloginUI();
     }

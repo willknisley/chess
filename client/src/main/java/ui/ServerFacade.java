@@ -1,15 +1,14 @@
-package server;
+package ui;
 
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
 
 import java.net.URI;
 import java.net.http.*;
 import java.util.Collection;
 
-import static server.ServerFacade.HttpMethod.*;
+import static ui.ServerFacade.HttpMethod.*;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();

@@ -1,18 +1,14 @@
 package client;
 
-import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import server.ServerFacade;
-import service.UserService;
+import ui.ServerFacade;
 
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static server.ServerFacade.HttpMethod.POST;
-
 
 
 public class ServerFacadeTests {
