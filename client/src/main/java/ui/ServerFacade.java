@@ -63,7 +63,7 @@ public class ServerFacade {
         var path = "/game";
         record JoinGameRequest(String playerColor, int gameID) {}
         var request = new JoinGameRequest(null, gameID);
-        makeRequest(GET, path, request, null, authToken);
+        makeRequest(POST, path, request, null, authToken);
     }
 
     public enum HttpMethod {
@@ -109,7 +109,7 @@ public class ServerFacade {
         HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
-            throw new Exception("HTTP error " + response.statusCode());
+            throw new Exception(response.body());
         }
 
         if (responseClass != null && response.body() != null && !response.body().isEmpty()) {

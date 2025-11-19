@@ -12,14 +12,13 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class SQLGameDAO {
-    public void clear() throws DataAccessException{
-        var sqlClear = "DELETE FROM game";
+    public void clear() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection();
-             var statement = conn.prepareStatement(sqlClear)) {
-            statement.executeUpdate();
-        } catch (
-                SQLException e) {
-            throw new DataAccessException("Error clearing users", e);
+             var statement = conn.createStatement()) {
+            statement.executeUpdate("DELETE FROM game");
+            statement.executeUpdate("ALTER TABLE game AUTO_INCREMENT = 1");
+        } catch (SQLException e) {
+            throw new DataAccessException("Error clearing games", e);
         }
     }
 

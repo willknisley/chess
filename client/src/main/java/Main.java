@@ -115,7 +115,7 @@ public class Main {
                     String name = bits[1];
                     try {
                         GameData result = server.createGame(name, authToken);
-                        System.out.println("Game creation successful: " + result.gameID());
+                        System.out.println("Game creation successful: " + (result.gameID()));
                     } catch (Exception e){
                         System.out.println("Game creation failed: " + e.getMessage());
                     }
@@ -132,7 +132,7 @@ public class Main {
                         System.out.println("Games:");
                         int count = 1;
                         for (GameData game : games) {
-                            System.out.println(count + ". ID: " + game.gameID() +
+                            System.out.println(". ID: " + game.gameID() +
                                     ", Name: " + game.gameName() +
                                     ", White: " + game.whiteUsername() +
                                     ", Black: " + game.blackUsername());
@@ -168,6 +168,7 @@ public class Main {
                     String gameIDString = bits[1];
                     try {
                         int gameID = Integer.parseInt(gameIDString);
+
                         server.observeGame(gameID, authToken);
                         System.out.println("Game observation successful");
 
@@ -270,8 +271,8 @@ public class Main {
                 }
             } else if (Objects.equals(playerColor, "BLACK")) {
                 drawHeaders(out, true);
-                for (int boardRow = 0; boardRow < 8; ++boardRow) {
-                    drawRowOfSquares(out, boardRow, chess, 8 - boardRow, true);
+                for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
+                    drawRowOfSquares(out, boardRow, chess, boardRow + 1, true);
                 }
             }
             setBlack(out);
@@ -284,25 +285,27 @@ public class Main {
 
         private static void drawRowOfSquares(PrintStream out, int boardRow, ChessBoard chess, int rowNumber, boolean flip) {
             for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_PADDED_CHARS; ++squareRow) {
-
                 if (squareRow == SQUARE_SIZE_IN_PADDED_CHARS / 2) {
                     setBlack(out);
-                    drawSide(out, String.valueOf(rowNumber));
+                    int displayedRank = boardRow + 1;
+                    drawSide(out, String.valueOf(displayedRank));
                 } else {
                     setBlack(out);
                     out.print(EMPTY);
                 }
 
                 for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                    if ((boardRow + boardCol) % 2 == 0) {
-                        setWhite(out);
-                        boolean isWhiteSquare = true;
+                    int row = boardRow;
+                    int col  = flip ? (BOARD_SIZE_IN_SQUARES - 1 - boardCol) : boardCol;
+                    if ((row + col) % 2 == 0) {
+                        setBlack(out);
+                        boolean isWhiteSquare = false;
 
                         if (squareRow == SQUARE_SIZE_IN_PADDED_CHARS / 2) {
                             int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
                             int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
-                            int col = flip ? (BOARD_SIZE_IN_SQUARES - 1 - boardCol) : boardCol;
-                            ChessPiece piece = chess.squares[boardRow][col];
+                            //int col = flip ? (BOARD_SIZE_IN_SQUARES - 1 - boardCol) : boardCol;
+                            ChessPiece piece = chess.squares[row][col];
                             out.print(EMPTY.repeat(prefixLength));
                             String pieceString = convertPieceToString(piece);
                             printPlayer(out, pieceString, piece, isWhiteSquare);
@@ -312,13 +315,13 @@ public class Main {
                         }
 
                     } else {
-                        setBlack(out);
-                        boolean isWhiteSquare = false;
+                        setWhite(out);
+                        boolean isWhiteSquare = true;
                         if (squareRow == SQUARE_SIZE_IN_PADDED_CHARS / 2) {
                             int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
                             int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
-                            int col = flip ? (BOARD_SIZE_IN_SQUARES - 1 - boardCol) : boardCol;
-                            ChessPiece piece = chess.squares[boardRow][col];
+                            //int col = flip ? (BOARD_SIZE_IN_SQUARES - 1 - boardCol) : boardCol;
+                            ChessPiece piece = chess.squares[row][col];
                             out.print(EMPTY.repeat(prefixLength));
                             String pieceString = convertPieceToString(piece);
                             printPlayer(out, pieceString, piece, isWhiteSquare);
@@ -331,7 +334,8 @@ public class Main {
                 }
                 if (squareRow == SQUARE_SIZE_IN_PADDED_CHARS / 2) {
                     setBlack(out);
-                    drawSide(out, String.valueOf(rowNumber));
+                    int displayedRank = boardRow + 1;
+                    drawSide(out, String.valueOf(displayedRank));
                 } else {
                     setBlack(out);
                     out.print(EMPTY);
@@ -343,12 +347,12 @@ public class Main {
 
         private static void setWhite(PrintStream out) {
             out.print(SET_BG_COLOR_WHITE);
-            out.print(SET_TEXT_COLOR_WHITE);
+            out.print(SET_TEXT_COLOR_BLACK);
         }
 
         private static void setBlack(PrintStream out) {
             out.print(SET_BG_COLOR_BLACK);
-            out.print(SET_TEXT_COLOR_BLACK);
+            out.print(SET_TEXT_COLOR_WHITE);
         }
 
         private static void printPlayer(PrintStream out, String player, ChessPiece piece, boolean isWhiteSquare) {
