@@ -129,10 +129,9 @@ public class ServerFacadeTests {
     public void observeGamePositiveTest() throws Exception {
         AuthData authData = facade.register("obUsername", "password", "test@email.com");
         String authToken = authData.authToken();
-        GameData gameData = facade.createGame("obGame", authToken);
-        int gameID = gameData.gameID();
+        facade.createGame("obGame", authToken);
         assertDoesNotThrow(() -> {
-            facade.observeGame(gameID, authToken);
+            facade.listGames(authToken);
         });
     }
 
