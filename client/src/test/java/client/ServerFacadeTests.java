@@ -58,7 +58,7 @@ public class ServerFacadeTests {
     public void logoutPositiveTest() throws Exception {
         AuthData authData = facade.register("logoUsername", "password", "test@email.com");
         String authToken = authData.authToken();
-        assertThrows(Exception.class, () -> {
+        assertDoesNotThrow(() -> {
             facade.logout(authToken);
         });
     }
