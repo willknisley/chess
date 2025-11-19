@@ -26,14 +26,14 @@ public class Server {
         try {
             DatabaseManager.createDatabase();
             DatabaseManager.createTables();
-            gameDAO = new SQLGameDAO();
-            gameDAO.clear();
+            //gameDAO = new SQLGameDAO();
+            //gameDAO.clear();
         } catch (DataAccessException e) {
             throw new RuntimeException("Failed to initialize database", e);
         }
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         userDAO = new SQLUserDAO();
-        //gameDAO = new SQLGameDAO();
+        gameDAO = new SQLGameDAO();
         authDAO = new SQLAuthDAO();
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(userDAO, gameDAO, authDAO);
