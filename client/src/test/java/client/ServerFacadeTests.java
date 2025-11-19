@@ -26,39 +26,39 @@ public class ServerFacadeTests {
 
     @Test
     public void loginPositiveTest() throws Exception {
-        facade.register("username", "password", "test@email.com");
-        AuthData authData = facade.login("username", "password");
-        assertEquals("testUser", authData.username());
+        facade.register("logUsername", "password", "test@email.com");
+        AuthData authData = facade.login("logUsername", "password");
+        assertEquals("logUsername", authData.username());
     }
 
     @Test
     public void loginNegativeTest() throws Exception {
-        facade.register("username", "password", "test@email.com");
-        AuthData authData = facade.login("username", "password");
+        facade.register("logUsername", "password", "test@email.com");
+        AuthData authData = facade.login("logUsername", "password");
         assertThrows(Exception.class, () -> {
-            facade.login("testUser", "wrongPassword");
+            facade.login("logUsername", "wrongPassword");
         });
     }
 
     @Test
     public void registerPositiveTest() throws Exception {
-        AuthData authData =  facade.register("username", "password", "test@email.com");
-        assertEquals("username", authData.username());
+        AuthData authData =  facade.register("regUsername", "password", "test@email.com");
+        assertEquals("regUsername", authData.username());
     }
 
     @Test
     public void registerNegativeTest() throws Exception {
-        AuthData authData =  facade.register("username", "password", "test@email.com");
+        AuthData authData =  facade.register("regUsername", "password", "test@email.com");
         assertThrows(Exception.class, () -> {
-            facade.register("username", "newPassword", "newtest@email.com");
+            facade.register("regUsername", "newPassword", "newtest@email.com");
         });
     }
 
     @Test
     public void logoutPositiveTest() throws Exception {
-        AuthData authData = facade.register("username", "password", "test@email.com");
+        AuthData authData = facade.register("logoUsername", "password", "test@email.com");
         String authToken = authData.authToken();
-        assertEquals("username", authData.username());
+        assertEquals("logoUsername", authData.username());
         assertThrows(Exception.class, () -> {
             facade.logout(authToken);
         });
@@ -75,9 +75,9 @@ public class ServerFacadeTests {
 
     @Test
     public void createGamePositiveTest() throws Exception {
-        AuthData authData = facade.register("username", "password", "test@email.com");
+        AuthData authData = facade.register("crUsername", "password", "test@email.com");
         String authToken = authData.authToken();
-        GameData gameData =  facade.createGame("game", authToken);
+        GameData gameData =  facade.createGame("testGame", authToken);
         assertTrue(gameData.gameID() > 0);
     }
 
@@ -91,9 +91,9 @@ public class ServerFacadeTests {
 
     @Test
     public void listGamesPositiveTest() throws Exception {
-        AuthData authData = facade.register("username", "password", "test@email.com");
+        AuthData authData = facade.register("liUsername", "password", "test@email.com");
         String authToken = authData.authToken();
-        facade.createGame("game", authToken);
+        facade.createGame("newGame", authToken);
         Collection<GameData> games = facade.listGames(authToken);
         assertEquals(1, games.size());
     }
@@ -108,9 +108,9 @@ public class ServerFacadeTests {
 
     @Test
     public void joinGamePositiveTest() throws Exception {
-        AuthData authData = facade.register("username", "password", "test@email.com");
+        AuthData authData = facade.register("joUsername", "password", "test@email.com");
         String authToken = authData.authToken();
-        GameData gameData = facade.createGame("game", authToken);
+        GameData gameData = facade.createGame("joGame", authToken);
         int gameID = gameData.gameID();
         assertDoesNotThrow(() -> {
             facade.joinGame(gameID, "WHITE", authToken);
@@ -128,9 +128,9 @@ public class ServerFacadeTests {
 
     @Test
     public void observeGamePositiveTest() throws Exception {
-        AuthData authData = facade.register("username", "password", "test@email.com");
+        AuthData authData = facade.register("obUsername", "password", "test@email.com");
         String authToken = authData.authToken();
-        GameData gameData = facade.createGame("game", authToken);
+        GameData gameData = facade.createGame("obGame", authToken);
         int gameID = gameData.gameID();
         assertDoesNotThrow(() -> {
             facade.observeGame(gameID, authToken);
