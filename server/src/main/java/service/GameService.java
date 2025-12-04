@@ -37,6 +37,9 @@ public class GameService {
             if (auth == null) {
                 throw new DataAccessException("Unauthorized");
             }
+            if (playerColor.equals("")) {
+                return;
+            }
             String username = auth.username();
             gameDAO.joinGame(gameID, playerColor, username);
 

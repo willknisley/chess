@@ -207,7 +207,7 @@ public class Server {
                 var hashMap = serializer.fromJson(json, HashMap.class);
                 String playerColor = (String) hashMap.get("playerColor");
                 Number gameIDNum = (Number) hashMap.get("gameID");
-                if (playerColor == null || playerColor.isEmpty() || (hashMap.get("gameID") == null)) {
+                if (playerColor == null || (hashMap.get("gameID") == null)) {
                     ctx.status(400);
                     ctx.result("{\"message\": \"Error: bad request\"}");
                     return;

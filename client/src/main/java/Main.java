@@ -4,6 +4,8 @@ import model.GameData;
 import ui.ServerFacade;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -87,6 +89,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         ServerFacade server = new ServerFacade("http://localhost:8080");
         boolean running = true;
+        List<GameData> listedGames = new ArrayList<>();
 
         while (running) {
             System.out.print("[LOGGED_IN] >>> ");
@@ -114,8 +117,10 @@ public class Main {
                 if (bits.length == 2) {
                     String name = bits[1];
                     try {
-                        GameData result = server.createGame(name, authToken);
-                        System.out.println("Game creation successful: " + (result.gameID()));
+                        server.createGame(name, authToken);
+                        listedGames = (List<GameData>) server.listGames(authToken);
+                        int index = listedGames.size();
+                        System.out.println("Game creation successful: Game " + index);
                     } catch (Exception e){
                         System.out.println("Game creation failed: " + e.getMessage());
                     }
@@ -130,13 +135,12 @@ public class Main {
                         System.out.println("No games available");
                     } else {
                         System.out.println("Games:");
-                        int count = 1;
+                        listedGames = (List<GameData>) games;
                         for (GameData game : games) {
-                            System.out.println(". ID: " + game.gameID() +
+                            System.out.println(". Game Index: " + game.gameID() +
                                     ", Name: " + game.gameName() +
                                     ", White: " + game.whiteUsername() +
                                     ", Black: " + game.blackUsername());
-                            count++;
                         }
                     }
                 } catch (Exception e) {
@@ -144,10 +148,15 @@ public class Main {
                 }
             } else if (command.equals("join")) {
                 if (bits.length == 3) {
-                    String gameIDString = bits[1];
                     String playerColor = bits[2];
                     try {
-                        int gameID = Integer.parseInt(gameIDString);
+                        int index = Integer.parseInt(bits[1]);
+                        if (index < 1 || index > listedGames.size()) {
+                            System.out.println("Invalid game number. Use 'list' first.");
+                            continue;
+                        }
+
+                        int gameID = listedGames.get(index - 1).gameID();
                         server.joinGame(gameID, playerColor, authToken);
                         System.out.println("Game joined successfully");
 
@@ -167,7 +176,13 @@ public class Main {
                 if (bits.length == 2) {
                     String gameIDString = bits[1];
                     try {
-                        int gameID = Integer.parseInt(gameIDString);
+                        int index = Integer.parseInt(bits[1]);
+
+                        if (index < 1 || index > listedGames.size()) {
+                            System.out.println("Invalid game number. Use 'list' first.");
+                            continue;
+                        }
+                        int gameID = listedGames.get(index - 1).gameID();
 
                         server.observeGame(gameID, authToken);
                         System.out.println("Game observation successful");

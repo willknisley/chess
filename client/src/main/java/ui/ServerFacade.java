@@ -62,8 +62,8 @@ public class ServerFacade {
     public void observeGame(int gameID, String authToken) throws Exception {
         var path = "/game";
         record JoinGameRequest(String playerColor, int gameID) {}
-        var request = new JoinGameRequest(null, gameID);
-        makeRequest(POST, path, request, null, authToken);
+        var request = new JoinGameRequest("", gameID);
+        makeRequest(PUT, path, request, null, authToken);
     }
 
     public enum HttpMethod {
@@ -109,7 +109,9 @@ public class ServerFacade {
         HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
-            throw new Exception(response.body());
+            String body = response.body();
+            String clean = body.replaceAll(".*\"message\"\\s*:\\s*\"(.*?)\".*", "$1");
+            throw new Exception(clean);
         }
 
         if (responseClass != null && response.body() != null && !response.body().isEmpty()) {
