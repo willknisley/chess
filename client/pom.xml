@@ -58,6 +58,7 @@
             <artifactId>shared</artifactId>
             <version>1.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>edu.byu.cs240</groupId>
             <artifactId>server</artifactId>
@@ -68,7 +69,9 @@
             <groupId>org.glassfish.tyrus.bundles</groupId>
             <artifactId>tyrus-standalone-client</artifactId>
             <version>2.1.4</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
+
 
 </project>
