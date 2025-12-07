@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class WebSocketHandler implements WsConnectHandler, WsMessageHandler
+public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler
  {
 
     private final ConnectionManager connections = new ConnectionManager();
