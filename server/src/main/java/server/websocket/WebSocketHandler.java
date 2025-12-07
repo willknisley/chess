@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.SQLAuthDAO;
-import exception.ResponseException;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
 import io.javalin.websocket.WsConnectContext;
@@ -14,28 +13,24 @@ import io.javalin.websocket.WsMessageHandler;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
-import webSocketMessages.Action;
-import webSocketMessages.Notification;
 import websocket.commands.UserGameCommand;
-
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static websocket.commands.UserGameCommand.CommandType.*;
-
-public class WebSocketHandler<LoadGameMessage> implements WsConnectHandler, WsMessageHandler, WsCloseHandler
+public class WebSocketHandler implements WsConnectHandler, WsMessageHandler
  {
 
     private final ConnectionManager connections = new ConnectionManager();
-    Map<Session, String> usernames = new ConcurrentHashMap<>();
-    Map<Session, Integer> games = new ConcurrentHashMap<>();
-    Map<Integer, List<Session>> sessionsByGame = new ConcurrentHashMap<>();
-     private final Gson gson = new Gson();
-     private final SQLAuthDAO authDAO;
-     private final GameDAO gameDAO;
+    private final Map<Session, String> usernames = new ConcurrentHashMap<>();
+    private final Map<Session, Integer> games = new ConcurrentHashMap<>();
+    private final Gson gson = new Gson();
+    private final SQLAuthDAO authDAO;
+    private final GameDAO gameDAO;
 
      public WebSocketHandler(SQLAuthDAO authDAO, GameDAO gameDAO) {
          this.authDAO = authDAO;
@@ -84,9 +79,11 @@ public class WebSocketHandler<LoadGameMessage> implements WsConnectHandler, WsMe
         }
         String username = auth.username();
 
-        GameData game = gameDAO.games.get(cmd.getGameID());
-        if (game == null) {
-            sendError(session, "Error: Game does not exist");
+        GameData game;
+        try {
+            game = gameDAO.getGame(cmd.getGameID());
+        } catch (DataAccessException e) {
+            sendError(session, "Error: game does not exist");
             return;
         }
 
@@ -103,38 +100,29 @@ public class WebSocketHandler<LoadGameMessage> implements WsConnectHandler, WsMe
 
     }
 
-    private void send(Session session, LoadGameMessage loadGameMessage) {
-    }
+     private void send(Session session, Object message) {
+         try {
+             String json = gson.toJson(message);
+             session.getRemote().sendString(json);
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+     }
 
-    private void sendError(Session session, String s) {
-    }
 
-    @Override
+     private void sendError(Session session, String errorMessage) {
+         String msg = errorMessage.toLowerCase().contains("error")
+                 ? errorMessage
+                 : "Error: " + errorMessage;
+
+         NotificationMessage error = new NotificationMessage(msg);
+         send(session, error);
+     }
+
+
+
+     @Override
     public void handleClose(WsCloseContext ctx) {
         System.out.println("Websocket closed");
-    }
-
-    private void enter(String visitorName, Session session) throws IOException {
-        connections.add(session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new Notification(Notification.Type.ARRIVAL, message);
-        connections.broadcast(session, notification);
-    }
-
-    private void exit(String visitorName, Session session) throws IOException {
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new Notification(Notification.Type.DEPARTURE, message);
-        connections.broadcast(session, notification);
-        connections.remove(session);
-    }
-
-    public void makeNoise(String petName, String sound) throws ResponseException {
-        try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new Notification(Notification.Type.NOISE, message);
-            connections.broadcast(null, notification);
-        } catch (Exception ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
-        }
     }
 }

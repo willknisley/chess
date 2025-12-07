@@ -51,4 +51,12 @@ public class GameDAO {
         games.put(gameID, updatedGame);
     }
 
+    public GameData getGame(int gameID) throws DataAccessException {
+        GameData game = games.get(gameID);
+        if (game == null) {
+            throw new DataAccessException("Game does not exist");
+        }
+        return game;
+    }
+
 }
