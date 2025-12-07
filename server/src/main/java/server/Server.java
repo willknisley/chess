@@ -21,6 +21,8 @@ public class Server {
     private final SQLAuthDAO authDAO;
     private final UserService userService;
     private final GameService gameService;
+    WebSocketServer webSocketServer = new WebSocketServer();
+
 
     public Server() {
         try {
@@ -235,6 +237,7 @@ public class Server {
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
             }
         });
+        javalin.put("/ws", WebSocketHandler.class);
     }
     public int run(int desiredPort) {
         javalin.start(desiredPort);
