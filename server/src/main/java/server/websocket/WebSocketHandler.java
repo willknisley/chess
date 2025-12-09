@@ -72,6 +72,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             sendError(session, "Error: invalid auth token");
             return;
         }
+
         String username = auth.username();
         GameData game = activeGames.get(cmd.getGameID());
         if (game == null) {
@@ -88,7 +89,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 return;
             }
         }
-
 
         ChessGame chess = game.game();
 
@@ -124,7 +124,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 chess
         );
 
-        activeGames.put(game.gameID(), newGame)
+        activeGames.put(game.gameID(), newGame);
 
         LoadGameMessage load = new LoadGameMessage(game);
         connections.broadcast(game.gameID(), new LoadGameMessage(newGame), null);
@@ -136,6 +136,31 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void handleLeave(UserGameCommand cmd, WsMessageContext ctx) {
+        Session session = ctx.session;
+        AuthData auth;
+
+        try {
+            auth = authDAO.getAuth(cmd.getAuthToken());
+        } catch (DataAccessException e) {
+            sendError(session, "Error: invalid auth token");
+            return;
+        }
+
+        Integer gameID = games.get(session);
+        if (gameID == null) {
+            sendError(session, "Error: game does not exist");
+            return;
+        }
+        String username = auth.username();
+
+        connections.remove(session);
+        usernames.remove(session);
+        games.remove(session);
+
+
+        String msg = username + " left the game";
+        connections.broadcast(gameID, new NotificationMessage(msg), session);
+
     }
 
     private void handleResign(UserGameCommand cmd, WsMessageContext ctx) {
