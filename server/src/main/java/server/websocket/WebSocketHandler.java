@@ -164,6 +164,50 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void handleResign(UserGameCommand cmd, WsMessageContext ctx) {
+        Session session = ctx.session;
+        AuthData auth;
+
+        try {
+            auth = authDAO.getAuth(cmd.getAuthToken());
+        } catch (DataAccessException e) {
+            sendError(session, "Error: invalid auth token");
+            return;
+        }
+        String username = auth.username();
+
+        Integer gameID = games.get(session);
+        if (gameID == null) {
+            sendError(session, "Error: game does not exist");
+            return;
+        }
+
+        GameData game = activeGames.get(gameID);
+        if (game == null) {
+            for (GameData g : gameDAO.listGames()) {
+                if (g.gameID() == gameID) {
+                    game = g;
+                    activeGames.put(gameID, g);
+                    break;
+                }
+            }
+
+            if (game == null) {
+                sendError(session, "Error: game does not exist");
+                return;
+            }
+        }
+
+        if (!(username.equals(game.whiteUsername())) && !(username.equals(game.blackUsername()))) {
+            sendError(session, "Error: only players can resign");
+            return;
+        }
+
+        activeGames.remove(gameID, game);
+
+        String msg = username + " resigned from the game";
+        NotificationMessage note = new NotificationMessage(msg);
+        connections.broadcast(gameID, note, session);
+
     }
 
     private void handleConnectCommand(UserGameCommand cmd, WsMessageContext ctx) {
