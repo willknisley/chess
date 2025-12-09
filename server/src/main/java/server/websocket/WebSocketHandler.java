@@ -32,6 +32,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private final Map<Session, String> usernames = new ConcurrentHashMap<>();
     private final Map<Session, Integer> games = new ConcurrentHashMap<>();
      private final Map<Integer, GameData> activeGames = new ConcurrentHashMap<>();
+     private final Map<Integer, Boolean> gamesDone = new ConcurrentHashMap<>();
      private final Gson gson = new Gson();
     private final SQLAuthDAO authDAO;
     private final GameDAO gameDAO;
@@ -74,6 +75,18 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         String username = auth.username();
+
+        Integer gameID = games.get(session);
+        if (gameID == null) {
+            sendError(session, "Error: game does not exist");
+            return;
+        }
+
+        if (gamesDone.getOrDefault(gameID, false)) {
+            sendError(session, "Error: game is already over");
+            return;
+        }
+
         GameData game = activeGames.get(cmd.getGameID());
         if (game == null) {
             for (GameData g : gameDAO.listGames()) {
@@ -83,13 +96,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     break;
                 }
             }
-
             if (game == null) {
                 sendError(session, "Error: game does not exist");
                 return;
             }
         }
-
         ChessGame chess = game.game();
 
         if (!username.equals(game.whiteUsername()) && !username.equals(game.blackUsername())) {
@@ -125,14 +136,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         );
 
         activeGames.put(game.gameID(), newGame);
+        connections.broadcast(gameID, new LoadGameMessage(newGame), null);
 
-        LoadGameMessage load = new LoadGameMessage(game);
-        connections.broadcast(game.gameID(), new LoadGameMessage(newGame), null);
-
-
-        String msg = playerColor + username + " moved" + cmd.getMove();
-        NotificationMessage note = new NotificationMessage(msg);
-        connections.broadcast(game.gameID(), new NotificationMessage(msg), session);
+        String msg = username + " moved" + cmd.getMove();
+        connections.broadcast(gameID, new NotificationMessage(msg), session);
     }
 
     private void handleLeave(UserGameCommand cmd, WsMessageContext ctx) {
@@ -202,7 +209,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
 
-        activeGames.remove(gameID, game);
+        gamesDone.put(gameID, true);
 
         String msg = username + " resigned from the game";
         NotificationMessage note = new NotificationMessage(msg);
@@ -222,10 +229,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         String username = auth.username();
 
-        GameData game;
-        try {
-            game = gameDAO.getGame(cmd.getGameID());
-        } catch (DataAccessException e) {
+        GameData game = null;
+        for (GameData g : gameDAO.listGames()) {
+            if (g.gameID() == cmd.getGameID()) {
+                game = g;
+                break;
+            }
+        }
+
+        if (game == null) {
             sendError(session, "Error: game does not exist");
             return;
         }
