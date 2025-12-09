@@ -3,8 +3,6 @@ package server.websocket;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.NotificationMessage;
-
-import javax.management.Notification;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
