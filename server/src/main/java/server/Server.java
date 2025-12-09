@@ -2,9 +2,10 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
-import io.javalin.*;
+import io.javalin.Javalin;
 import model.AuthData;
 import model.GameData;
+import server.websocket.WebSocketHandler;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -16,20 +17,18 @@ import java.util.Map;
 public class Server {
 
     private final Javalin javalin;
-    private final SQLUserDAO userDAO;
-    private final SQLGameDAO gameDAO;
-    private final SQLAuthDAO authDAO;
+    private SQLUserDAO userDAO;
+    private SQLGameDAO gameDAO;
+    private SQLAuthDAO authDAO;
     private final UserService userService;
     private final GameService gameService;
-    WebSocketServer webSocketServer = new WebSocketServer();
+    private WebSocketHandler webSocketHandler;
 
 
     public Server() {
         try {
             DatabaseManager.createDatabase();
             DatabaseManager.createTables();
-            //gameDAO = new SQLGameDAO();
-            //gameDAO.clear();
         } catch (DataAccessException e) {
             throw new RuntimeException("Failed to initialize database", e);
         }
@@ -39,6 +38,13 @@ public class Server {
         authDAO = new SQLAuthDAO();
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(userDAO, gameDAO, authDAO);
+
+        webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
+        javalin.ws("/ws", ws -> {
+                    ws.onConnect(webSocketHandler);
+                    ws.onMessage(webSocketHandler);
+                    ws.onClose(webSocketHandler);
+                });
         // Register your endpoints and exception handlers here.
         javalin.delete("/db", ctx -> {
             try {
@@ -237,7 +243,7 @@ public class Server {
                 ctx.result("{\"message\": \"Error: " + e.getMessage() + "\"}");
             }
         });
-        javalin.put("/ws", WebSocketHandler.class);
+
     }
     public int run(int desiredPort) {
         javalin.start(desiredPort);

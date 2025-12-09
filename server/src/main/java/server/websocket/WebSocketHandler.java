@@ -4,8 +4,8 @@ import chess.ChessGame;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
 import dataaccess.SQLAuthDAO;
+import dataaccess.SQLGameDAO;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
 import io.javalin.websocket.WsConnectContext;
@@ -35,9 +35,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
      private final Map<Integer, Boolean> gamesDone = new ConcurrentHashMap<>();
      private final Gson gson = new Gson();
     private final SQLAuthDAO authDAO;
-    private final GameDAO gameDAO;
+    private final SQLGameDAO gameDAO;
 
-     public WebSocketHandler(SQLAuthDAO authDAO, GameDAO gameDAO) {
+     public WebSocketHandler(SQLAuthDAO authDAO, SQLGameDAO gameDAO) {
          this.authDAO = authDAO;
          this.gameDAO = gameDAO;
      }
@@ -63,7 +63,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void handleMakeMove(UserGameCommand cmd, WsMessageContext ctx) {
+    private void handleMakeMove(UserGameCommand cmd, WsMessageContext ctx) throws DataAccessException {
          Session session = ctx.session;
          AuthData auth;
 
@@ -170,7 +170,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void handleResign(UserGameCommand cmd, WsMessageContext ctx) {
+    private void handleResign(UserGameCommand cmd, WsMessageContext ctx) throws DataAccessException {
         Session session = ctx.session;
         AuthData auth;
 
@@ -217,7 +217,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void handleConnectCommand(UserGameCommand cmd, WsMessageContext ctx) {
+    private void handleConnectCommand(UserGameCommand cmd, WsMessageContext ctx) throws DataAccessException {
         Session session = ctx.session;
         AuthData auth;
 
