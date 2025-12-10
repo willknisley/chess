@@ -228,7 +228,9 @@ public class Server {
                 if (e.getMessage().contains("taken")) {
                     ctx.status(403);
                     ctx.result("{\"message\": \"Error: already taken\"}");
-                } else if (e.getMessage().contains("Invalid color") || e.getMessage().contains("Game does not exist")) {
+                } else if (e.getMessage() != null &&
+                        (e.getMessage().toLowerCase().contains("invalid color") ||
+                                e.getMessage().toLowerCase().contains("game does not exist"))) {
                     ctx.status(400);
                     ctx.result("{\"message\": \"Error: bad request\"}");
                 } else if (e.getMessage().equals("authToken does not exist")) {
