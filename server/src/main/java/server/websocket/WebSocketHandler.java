@@ -207,10 +207,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             );
             activeGames.put(gameID, newGame);
             gameDAO.updateGame(newGame);
-
-            if (newGame.blackUsername() == null) {
-                gamesDone.remove(gameID);
-            }
+            gamesDone.remove(gameID);
         }
 
         else if (username.equals(game.blackUsername())) {
@@ -223,10 +220,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             );
             activeGames.put(gameID, newGame);
             gameDAO.updateGame(newGame);
-
-            if (newGame.whiteUsername() == null) {
-                gamesDone.remove(gameID);
-            }
+            gamesDone.remove(gameID);
         }
 
         connections.remove(session);
@@ -279,9 +273,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         if (gamesDone.getOrDefault(gameID, false)) {
-            String msg = username + " tried to resign but the game is already over";
-            NotificationMessage note = new NotificationMessage(msg);
-            connections.broadcast(gameID, note, null);
+            sendError(session, "Error: game is already over");
             return;
         }
 
