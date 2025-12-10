@@ -18,6 +18,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.List;
@@ -343,7 +344,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                  ? errorMessage
                  : "Error: " + errorMessage;
 
-         NotificationMessage error = new NotificationMessage(msg);
+         NotificationMessage error = new NotificationMessage(ServerMessage.ServerMessageType.ERROR, msg);
          send(session, error);
      }
 
