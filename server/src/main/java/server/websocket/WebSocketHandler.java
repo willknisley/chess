@@ -85,8 +85,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         if (gamesDone.getOrDefault(gameID, false)) {
-            connections.broadcast(gameID,
-                    new NotificationMessage("game is already over"), null);
+            sendError(session, "Error: game is already over");
             return;
         }
 
@@ -251,8 +250,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         if (gamesDone.getOrDefault(gameID, false)) {
-            connections.broadcast(gameID,
-                    new NotificationMessage("game is already over"), null);
+            sendError(session, "Error: game is already over");
             return;
         }
 
