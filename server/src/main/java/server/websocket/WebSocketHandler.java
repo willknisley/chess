@@ -272,12 +272,32 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
 
-        if (gamesDone.getOrDefault(gameID, false)) {
+        if (game.whiteUsername() == null || game.blackUsername() == null) {
             sendError(session, "Error: game is already over");
             return;
         }
 
         gamesDone.put(gameID, true);
+
+        GameData newGame;
+        if (username.equals(game.whiteUsername())) {
+            newGame = new GameData(
+                    game.gameID(),
+                    null,
+                    game.blackUsername(),
+                    game.gameName(),
+                    game.game()
+            );
+        } else {
+            newGame = new GameData(
+                    game.gameID(),
+                    game.whiteUsername(),
+                    null,
+                    game.gameName(),
+                    game.game()
+            );
+        }
+        activeGames.put(gameID, newGame);
         gameDAO.updateGame(game);
 
         String msg = username + " resigned from the game";
