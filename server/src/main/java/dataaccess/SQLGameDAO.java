@@ -69,6 +69,10 @@ public class SQLGameDAO {
     }
 
     public void joinGame(int gameID, String playerColor, String username) throws DataAccessException {
+        if (playerColor == null) {
+            throw new DataAccessException("Invalid color");
+        }
+
         playerColor = playerColor.trim().toUpperCase();
 
         var sqlJoinGame = "SELECT * FROM game WHERE gameID = ?";
@@ -108,6 +112,7 @@ public class SQLGameDAO {
             throw new DataAccessException("Error joining game", e);
         }
     }
+
 
 
     public void updateGame(GameData game) throws DataAccessException {
