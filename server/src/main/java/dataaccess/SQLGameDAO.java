@@ -69,13 +69,16 @@ public class SQLGameDAO {
     }
 
     public void joinGame(int gameID, String playerColor, String username) throws DataAccessException {
+        playerColor = playerColor.trim().toUpperCase();
+
         var sqlJoinGame = "SELECT * FROM game WHERE gameID = ?";
         try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sqlJoinGame)) {
+
             statement.setInt(1, gameID);
             var rs = statement.executeQuery();
             if (!rs.next()) {
-                throw new DataAccessException(("Game doesn't exist"));
+                throw new DataAccessException("Game does not exist");
             }
 
             String whiteUsername = rs.getString("whiteUsername");
@@ -83,26 +86,29 @@ public class SQLGameDAO {
 
             if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
                 throw new DataAccessException("Invalid color");
-            } else if (playerColor.equals("WHITE") && whiteUsername != null) {
-                throw new DataAccessException("already taken");
-            } else if (playerColor.equals("BLACK") && blackUsername != null) {
-                throw new DataAccessException("already taken");
-            }
-            String newSql;
-            if (playerColor.equals("WHITE")) {
-            newSql = "UPDATE game SET whiteUsername = ? WHERE gameID = ?";
-            } else {
-                newSql = "UPDATE game SET blackUsername = ? WHERE gameID = ?";
             }
 
-            var updateStatement = conn.prepareStatement(newSql);
-            updateStatement.setString(1, username);
-            updateStatement.setInt(2, gameID);
-            updateStatement.executeUpdate();
+            if (playerColor.equals("WHITE") && whiteUsername != null) {
+                throw new DataAccessException("already taken");
+            }
+            if (playerColor.equals("BLACK") && blackUsername != null) {
+                throw new DataAccessException("already taken");
+            }
+
+            String updateSql = playerColor.equals("WHITE")
+                    ? "UPDATE game SET whiteUsername = ? WHERE gameID = ?"
+                    : "UPDATE game SET blackUsername = ? WHERE gameID = ?";
+
+            try (var updateStatement = conn.prepareStatement(updateSql)) {
+                updateStatement.setString(1, username);
+                updateStatement.setInt(2, gameID);
+                updateStatement.executeUpdate();
+            }
         } catch (SQLException e) {
-            throw new DataAccessException("Wrong player color", e);
+            throw new DataAccessException("Error joining game", e);
         }
     }
+
 
     public void updateGame(GameData game) throws DataAccessException {
         var sql = "UPDATE game SET whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?";
