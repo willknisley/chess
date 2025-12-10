@@ -298,7 +298,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             );
         }
         activeGames.put(gameID, newGame);
-        gameDAO.updateGame(game);
+        gameDAO.updateGame(newGame);
 
         String msg = username + " resigned from the game";
         NotificationMessage note = new NotificationMessage(msg);
