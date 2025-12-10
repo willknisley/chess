@@ -140,6 +140,34 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         String msg = username + " moved" + cmd.getMove();
         connections.broadcast(gameID, new NotificationMessage(msg), session);
+
+        if (playerColor == ChessGame.TeamColor.WHITE) {
+            if (chess.isInCheck(ChessGame.TeamColor.BLACK)) {
+                connections.broadcast(gameID, new NotificationMessage(game.blackUsername() + " is in check"), null);
+            }
+        } else {
+            if (chess.isInCheck(ChessGame.TeamColor.WHITE)) {
+                connections.broadcast(gameID, new NotificationMessage(game.whiteUsername() + " is in check"), null);
+            }
+        }
+        if (playerColor == ChessGame.TeamColor.WHITE) {
+            if (chess.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                gamesDone.put(gameID, true);
+                connections.broadcast(gameID, new NotificationMessage(game.blackUsername() + " is in checkmate"), null);
+            } else if (chess.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                gamesDone.put(gameID, true);
+                connections.broadcast(gameID, new NotificationMessage("stalemate"), null);
+            }
+        } else {
+            if (chess.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                gamesDone.put(gameID, true);
+                connections.broadcast(gameID, new NotificationMessage(game.whiteUsername() + " is in checkmate"), null);
+            } else if (chess.isInStalemate(ChessGame.TeamColor.WHITE)) {
+                gamesDone.put(gameID, true);
+                connections.broadcast(gameID, new NotificationMessage("stalemate"), null);
+            }
+        }
+
     }
 
     private void handleLeave(UserGameCommand cmd, WsMessageContext ctx) {
@@ -249,7 +277,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         LoadGameMessage load = new LoadGameMessage(game);
         send(session, load);
 
-        String msg = username + " connected to the game.";
+        String msg;
+        if (username.equals(game.whiteUsername())) {
+            msg = username + " connected to game as white";
+        } else if (username.equals(game.blackUsername())) {
+            msg = username + " connected to game as black";
+        } else {
+            msg = username + " connected to game as observer";
+        }
+
         NotificationMessage note = new NotificationMessage(msg);
         connections.broadcast(cmd.getGameID(), note, session);
 
