@@ -279,7 +279,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         if (gamesDone.getOrDefault(gameID, false)) {
-            sendError(session, "Error: game is already over");
+            String msg = username + " tried to resign but the game is already over";
+            NotificationMessage note = new NotificationMessage(msg);
+            connections.broadcast(gameID, note, null);
             return;
         }
 
