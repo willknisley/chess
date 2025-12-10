@@ -249,11 +249,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
 
-        if (gamesDone.getOrDefault(gameID, false)) {
-            sendError(session, "Error: game is already over");
-            return;
-        }
-
         GameData game = activeGames.get(gameID);
         if (game == null) {
             for (GameData g : gameDAO.listGames()) {
@@ -272,6 +267,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         if (!(username.equals(game.whiteUsername())) && !(username.equals(game.blackUsername()))) {
             sendError(session, "Error: only players can resign");
+            return;
+        }
+
+        if (gamesDone.getOrDefault(gameID, false)) {
+            sendError(session, "Error: game is already over");
             return;
         }
 
