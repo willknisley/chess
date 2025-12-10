@@ -271,6 +271,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             sendError(session, "Error: only players can resign");
             return;
         }
+
+        if (gamesDone.getOrDefault(gameID, false)) {
+            sendError(session, "Error: game is already over");
+            return;
+        }
+
         gamesDone.put(gameID, true);
         gameDAO.updateGame(game);
 
