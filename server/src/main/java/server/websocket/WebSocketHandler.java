@@ -271,11 +271,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             sendError(session, "Error: only players can resign");
             return;
         }
-
-        if (gamesDone.getOrDefault(gameID, false)) {
-            sendError(session, "Error: game is already over");
-            return;
-        }
+        
 
         gamesDone.put(gameID, true);
         gameDAO.updateGame(game);
@@ -311,6 +307,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         activeGames.put(game.gameID(), game);
+
+
         usernames.put(session, username);
         games.put(session, cmd.getGameID());
         connections.addToGame(cmd.getGameID(), session);
