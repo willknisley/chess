@@ -16,6 +16,7 @@ import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
@@ -338,17 +339,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
          }
      }
 
-
      private void sendError(Session session, String errorMessage) {
-         String msg = errorMessage.toLowerCase().contains("error")
-                 ? errorMessage
-                 : "Error: " + errorMessage;
+         String msg = errorMessage.startsWith("Error:") ? errorMessage : "Error: " + errorMessage;
 
-         NotificationMessage error = new NotificationMessage(ServerMessage.ServerMessageType.ERROR, msg);
+         ErrorMessage error = new ErrorMessage(msg);
          send(session, error);
      }
-
-
 
      @Override
     public void handleClose(WsCloseContext ctx) {
