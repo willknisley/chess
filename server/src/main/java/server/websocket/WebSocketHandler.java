@@ -145,21 +145,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.broadcast(gameID, new NotificationMessage(msg), session);
 
         if (playerColor == ChessGame.TeamColor.WHITE) {
-            if (chess.isInCheck(ChessGame.TeamColor.BLACK)) {
-                connections.broadcast(gameID, new NotificationMessage(game.blackUsername() + " is in check"), null);
-            }
-        } else {
-            if (chess.isInCheck(ChessGame.TeamColor.WHITE)) {
-                connections.broadcast(gameID, new NotificationMessage(game.whiteUsername() + " is in check"), null);
-            }
-        }
-        if (playerColor == ChessGame.TeamColor.WHITE) {
             if (chess.isInCheckmate(ChessGame.TeamColor.BLACK)) {
                 gamesDone.put(gameID, true);
                 connections.broadcast(gameID, new NotificationMessage(game.blackUsername() + " is in checkmate"), null);
             } else if (chess.isInStalemate(ChessGame.TeamColor.BLACK)) {
                 gamesDone.put(gameID, true);
                 connections.broadcast(gameID, new NotificationMessage("stalemate"), null);
+            } else if (chess.isInCheck(ChessGame.TeamColor.BLACK)) {
+                connections.broadcast(gameID, new NotificationMessage(game.blackUsername() + " is in check"), null);
             }
         } else {
             if (chess.isInCheckmate(ChessGame.TeamColor.WHITE)) {
@@ -168,6 +161,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             } else if (chess.isInStalemate(ChessGame.TeamColor.WHITE)) {
                 gamesDone.put(gameID, true);
                 connections.broadcast(gameID, new NotificationMessage("stalemate"), null);
+            } else if (chess.isInCheck(ChessGame.TeamColor.WHITE)) {
+                connections.broadcast(gameID, new NotificationMessage(game.whiteUsername() + " is in check"), null);
             }
         }
 
@@ -251,6 +246,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         Integer gameID = games.get(session);
         if (gameID == null) {
             sendError(session, "Error: game does not exist");
+            return;
+        }
+
+        if (gamesDone.getOrDefault(gameID, false)) {
+            sendError(session, "Error: game is already over");
             return;
         }
 
