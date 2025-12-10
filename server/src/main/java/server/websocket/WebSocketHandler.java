@@ -136,6 +136,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         );
 
         activeGames.put(game.gameID(), newGame);
+        gameDAO.updateGame(newGame);
         connections.broadcast(gameID, new LoadGameMessage(newGame), null);
 
         String msg = username + " moved" + cmd.getMove();
@@ -170,7 +171,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void handleLeave(UserGameCommand cmd, WsMessageContext ctx) {
+    private void handleLeave(UserGameCommand cmd, WsMessageContext ctx) throws DataAccessException {
         Session session = ctx.session;
         AuthData auth;
 
@@ -187,6 +188,41 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         String username = auth.username();
+
+        GameData game = activeGames.get(gameID);
+        if (game == null) {
+            for (GameData g : gameDAO.listGames()) {
+                if (g.gameID() == gameID) {
+                    game = g;
+                    activeGames.put(gameID, g);
+                    break;
+                }
+            }
+        }
+
+        if (username.equals(game.whiteUsername())) {
+            GameData newGame = new GameData(
+                    game.gameID(),
+                    null,
+                    game.blackUsername(),
+                    game.gameName(),
+                    game.game()
+            );
+            activeGames.put(gameID, newGame);
+            gameDAO.updateGame(newGame);
+        }
+
+        else if (username.equals(game.blackUsername())) {
+            GameData newGame = new GameData(
+                    game.gameID(),
+                    game.whiteUsername(),
+                    null,
+                    game.gameName(),
+                    game.game()
+            );
+            activeGames.put(gameID, newGame);
+            gameDAO.updateGame(newGame);
+        }
 
         connections.remove(session);
         usernames.remove(session);
@@ -238,11 +274,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         gamesDone.put(gameID, true);
+        gameDAO.updateGame(game);
 
         String msg = username + " resigned from the game";
         NotificationMessage note = new NotificationMessage(msg);
-        connections.broadcast(gameID, note, session);
-
+        connections.broadcast(gameID, note, null);
     }
 
     private void handleConnectCommand(UserGameCommand cmd, WsMessageContext ctx) throws DataAccessException {
@@ -270,6 +306,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
 
+        activeGames.put(game.gameID(), game);
         usernames.put(session, username);
         games.put(session, cmd.getGameID());
         connections.addToGame(cmd.getGameID(), session);

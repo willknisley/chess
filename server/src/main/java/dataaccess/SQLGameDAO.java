@@ -104,4 +104,21 @@ public class SQLGameDAO {
         }
     }
 
+    public void updateGame(GameData game) throws DataAccessException {
+        var sql = "UPDATE game SET whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?";
+        try (var conn = DatabaseManager.getConnection();
+             var statement = conn.prepareStatement(sql)) {
+
+            statement.setString(1, game.whiteUsername());
+            statement.setString(2, game.blackUsername());
+            statement.setString(3, new Gson().toJson(game.game()));
+            statement.setInt(4, game.gameID());
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error updating game", e);
+        }
+    }
+
+
 }
