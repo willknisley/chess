@@ -207,6 +207,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             );
             activeGames.put(gameID, newGame);
             gameDAO.updateGame(newGame);
+
+            if (newGame.blackUsername() == null) {
+                gamesDone.remove(gameID);
+            }
         }
 
         else if (username.equals(game.blackUsername())) {
@@ -219,6 +223,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             );
             activeGames.put(gameID, newGame);
             gameDAO.updateGame(newGame);
+
+            if (newGame.whiteUsername() == null) {
+                gamesDone.remove(gameID);
+            }
         }
 
         connections.remove(session);
